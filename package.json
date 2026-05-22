@@ -1,0 +1,25 @@
+{
+  "name": "@bugzy-ai/skills",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Installable Bugzy QA skills for pi.",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "bugzy",
+    "qa",
+    "skills"
+  ],
+  "scripts": {
+    "validate": "node scripts/validate-skills.mjs",
+    "test": "node --test tests/validate-skills.test.mjs"
+  },
+  "pi": {
+    "skills": [
+      "./skills"
+    ]
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

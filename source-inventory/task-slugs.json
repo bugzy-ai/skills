@@ -1,0 +1,73 @@
+{
+  "source": "packages/bugzy/src/tasks/constants.ts and packages/bugzy/src/tasks/index.ts",
+  "tasks": [
+    {
+      "constant": "EXPLORE_APPLICATION",
+      "slug": "explore-application",
+      "registered": true
+    },
+    {
+      "constant": "EXPLORE_TEST_CODEBASE",
+      "slug": "explore-test-codebase",
+      "registered": true
+    },
+    {
+      "constant": "GENERATE_TEST_PLAN",
+      "slug": "generate-test-plan",
+      "registered": true
+    },
+    {
+      "constant": "GENERATE_TEST_CASES",
+      "slug": "generate-test-cases",
+      "registered": true
+    },
+    {
+      "constant": "RUN_TESTS",
+      "slug": "run-tests",
+      "registered": true
+    },
+    {
+      "constant": "VERIFY_CHANGES",
+      "slug": "verify-changes",
+      "registered": true
+    },
+    {
+      "constant": "VERIFY_CHANGES_ON_TICKET",
+      "slug": "verify-changes-on-ticket",
+      "registered": true
+    },
+    {
+      "constant": "VERIFY_CHANGES_ON_DEPLOYMENT",
+      "slug": "verify-changes-on-deployment",
+      "registered": true
+    },
+    {
+      "constant": "ONBOARD_TESTING",
+      "slug": "onboard-testing",
+      "registered": true
+    },
+    {
+      "constant": "HANDLE_MESSAGE",
+      "slug": "handle-message",
+      "registered": true
+    },
+    {
+      "constant": "PROCESS_EVENT",
+      "slug": "process-event",
+      "registered": true
+    },
+    {
+      "constant": "TRIAGE_RESULTS",
+      "slug": "triage-results",
+      "registered": true
+    }
+  ],
+  "aliases": [
+    {
+      "constant": "FULL_TEST_COVERAGE",
+      "alias": "full-test-coverage",
+      "canonicalSlug": "onboard-testing",
+      "note": "The TypeScript constant value is `onboard-testing`; this inventory records the deprecated external slug name for migration completeness."
+    }
+  ]
+}
