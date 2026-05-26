@@ -1,0 +1,91 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { listCases } from '../../src/commands/list-cases';
+import { mockOk } from '../mock-response';
+
+describe('list-cases', () => {
+  const originalEnv = process.env;
+
+  beforeEach(() => {
+    process.env = { ...originalEnv, TESTINY_API_KEY: 'test-key', TESTINY_PROJECT_ID: '1' };
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+    vi.restoreAllMocks();
+  });
+
+  it('throws if neither --project nor env is set', async () => {
+    delete process.env.TESTINY_PROJECT_ID;
+    await expect(listCases({})).rejects.toThrow(
+      '--project or TESTINY_PROJECT_ID env is required'
+    );
+  });
+
+  it('POSTs to /testcase/find with filter-only body (no limit — DataReadParams rejects it)', async () => {
+    vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    const mockFetch = vi
+      .fn()
+      .mockResolvedValue(mockOk({ meta: { offset: 0, limit: 2000, count: 1 }, data: [{ id: 1, title: 'A' }] }));
+    vi.stubGlobal('fetch', mockFetch);
+
+    await listCases({});
+
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe('https://app.testiny.io/api/v1/testcase/find');
+    expect(init.method).toBe('POST');
+    const body = JSON.parse(init.body);
+    expect(body).toEqual({ filter: { project_id: 1 } });
+    expect(body.limit).toBeUndefined();
+  });
+
+  it('applies --limit client-side (slices the data array)', async () => {
+    const writeSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(mockOk({
+        meta: { offset: 0, limit: 2000, count: 5 },
+        data: [{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }],
+      })),
+    );
+
+    await listCases({ limit: '2' });
+
+    const out = JSON.parse(writeSpy.mock.calls[0][0] as string);
+    expect(out.values).toHaveLength(2);
+    expect(out.values[0].id).toBe(1);
+    expect(out.values[1].id).toBe(2);
+    expect(out.total).toBe(5);
+  });
+
+  it('rejects non-numeric --limit', async () => {
+    await expect(listCases({ limit: 'lots' })).rejects.toThrow(
+      '--limit must be a positive number'
+    );
+  });
+
+  it('normalizes data/items wrapping into a values[] response', async () => {
+    const writeSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(mockOk({ meta: { count: 2 }, data: [{ id: 1 }, { id: 2 }] })),
+    );
+
+    await listCases({});
+
+    const out = JSON.parse(writeSpy.mock.calls[0][0] as string);
+    expect(out.values).toHaveLength(2);
+    expect(out.total).toBe(2);
+  });
+
+  it('falls back to items[] if response uses items wrapping', async () => {
+    const writeSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(mockOk({ items: [{ id: 7 }] })));
+
+    await listCases({});
+
+    const out = JSON.parse(writeSpy.mock.calls[0][0] as string);
+    expect(out.values).toHaveLength(1);
+    expect(out.values[0].id).toBe(7);
+    expect(out.total).toBe(1);
+  });
+});

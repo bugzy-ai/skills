@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+
+npm run build:clis
+git add skills/integrations/*/cli/dist/cli.js

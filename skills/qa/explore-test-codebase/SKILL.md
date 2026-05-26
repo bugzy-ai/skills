@@ -1,18 +1,157 @@
 ---
-name: bugzy-explore-test-codebase
-description: Analyze an existing automated test repository to understand frameworks, conventions, coverage, and result parsing. Use for bring-your-own-tests onboarding.
+name: explore-test-codebase
+description: Analyze an existing automated test repository to identify frameworks, conventions, coverage, selectors, and result parsing. Use when onboarding bring-your-own-tests projects or diagnosing current test-suite structure.
 ---
 
 # Explore Test Codebase
 
-## When to use
+Follow this workflow in order. The skill body is self-contained: use the user's request, repository files, runtime artifacts, and configured Bugzy capabilities/providers available in the current session.
 
-Use when a project already has an external test repository and Bugzy needs to understand how tests are structured, run, reported, and mapped to product areas.
+## Capability and provider usage
 
-## Source basis
+When a step names a configured capability or provider, use the matching installed skill, CLI, MCP server, or inline tools available in the current session. If a required capability is unavailable, report it as a blocker before attempting unsupported work. If an optional provider is unavailable, continue from local artifacts and include the skipped provider action in the final report.
 
-Derived from `packages/bugzy/src/tasks/library/explore-test-codebase.ts`, `analyze-test-codebase`, `create-results-parser`, and knowledge-base maintenance steps.
+### Required capabilities
+
+- browser automation: required for the full workflow.
 
 ## Workflow
 
-NaN
+### Step 1: Explore Test Codebase Overview
+
+Analyze the external test repository to understand the testing framework, test coverage, conventions, and codebase structure. This task is triggered during BYOT (Bring Your Own Tests) onboarding to help Bugzy understand the customer's existing test suite.
+
+### Step 2: Security Notice
+
+## SECURITY NOTICE
+
+**CRITICAL**: Never read the `.env` file. It contains ONLY secrets.
+
+**SECRETS** (go in .env ONLY - never in .env.testdata):
+- Variables containing: PASSWORD, SECRET, TOKEN, KEY, CREDENTIALS, API_KEY
+- Examples: TEST_USER_PASSWORD, TEST_API_KEY, TEST_AUTH_TOKEN, TEST_SECRET
+
+**TEST DATA** (go in .env.testdata - safe to commit):
+- URLs: TEST_BASE_URL, TEST_API_URL
+- Emails: TEST_USER_EMAIL, TEST_OWNER_EMAIL
+- Non-sensitive inputs: TEST_CHECKOUT_FIRST_NAME, TEST_DEFAULT_TIMEOUT
+
+**Rule**: If a variable name contains PASSWORD, SECRET, TOKEN, or KEY - it's a secret.
+Reference secret variable names only (e.g., ${TEST_USER_PASSWORD}) - values injected at runtime.
+The `.env` file access is blocked by settings.json.
+
+### Step 3: Arguments
+
+**Arguments**: the user's current request and any explicit skill arguments
+
+**Parse:**
+- **focus**: specific area to analyze (default: comprehensive)
+
+### Step 4: Analyze Test Codebase
+
+## Analyze External Test Codebase
+
+Analyze the customer's test repository to understand framework, conventions, coverage, and structure.
+
+### 1. Check for CLAUDE.md
+Look for `./tests/CLAUDE.md` or `./CLAUDE.md`. If present, read it for documented conventions and setup.
+
+### 2. Scan Directory Structure
+Examine top-level directories, identify test directories and config files, check `package.json` for test scripts and dependencies.
+
+### 3. Identify Test Framework
+Determine framework from config files and dependencies. Note the test runner, assertion library, and tooling (automation support abstractions, MSW, testing-library, etc.). Distinguish UI tests (page/browser) from API tests (request context, HTTP clients).
+
+### 4. Catalog Test Coverage
+Parse test files to understand structure. Group tests by feature area, count test files and approximate test cases, note skipped/pending tests, and document the UI-to-API test ratio.
+
+### 5. Document Conventions
+Identify: naming patterns (`*.spec.ts`, `*.test.ts`, etc.), page object/fixture patterns, data management approach, environment configuration, and CI integration.
+
+### 6. Generate Summary
+Save findings to `.bugzy/runtime/test-codebase-analysis.md` with: framework and version, test runner, total test files, estimated test cases, feature areas covered, key conventions, directory structure, and notable patterns.
+
+### 7. Generate CLAUDE.md (if missing)
+If the test repo lacks a CLAUDE.md, generate a draft based on actual findings: discovered framework/runner, build/run commands from package.json, key conventions, and directory structure. Do NOT use a framework-specific template — base content on what was actually discovered.
+
+Commit the analysis results so they are available for future task executions.
+
+### Step 5: Create Results Parser Script
+
+## Create Results Parser Script
+
+Create `reporters/parse-results.ts` — a reusable CLI script that normalizes test results into Bugzy's `test-runs/` manifest format. Used by both CI events and agent-executed BYOT test runs.
+
+**AI Attribution:** First line must be `// Generated by Bugzy AI — https://bugzy.ai` before any imports.
+
+### Inspect the Test Project
+
+1. Read `./tests/CLAUDE.md` for framework, test runner, and report format
+2. Check the test runner config for report settings
+3. Read a sample test output if available to understand the exact structure
+
+### Script Interface
+
+```
+npx tsx reporters/parse-results.ts --input <file-or-url> [--timestamp <existing>] [--test-id <id>]
+```
+
+- `--input` (required): file path or URL (URLs downloaded with 30s timeout)
+- `--timestamp` (optional): existing run timestamp for incremental mode
+- `--test-id` (optional): specific test case ID for incremental mode
+
+### Normal Mode (no --timestamp)
+
+1. Parse the project-specific test output format
+2. Generate timestamp `YYYYMMDD-HHmmss`
+3. Create `test-runs/{timestamp}/manifest.json` with fields: `bugzyExecutionId` (from BUGZY_EXECUTION_ID env or "local"), `timestamp`, `startTime`/`endTime` (ISO8601), `status`: "completed", `stats` (totalTests, passed, failed, totalExecutions), `testCases` array (id, name, totalExecutions, finalStatus, executions[]), `new_failures` array, `known_failures` array
+4. **Classify failures** using lookback: read `BUGZY_FAILURE_LOOKBACK` env (default: 5). Scan previous `test-runs/*/manifest.json` sorted by timestamp desc. For each failed test: passed in any of last N runs → `new_failures` (include `lastPassedRun` timestamp); failed in ALL last N runs → `known_failures`; not in any previous run or no previous runs → `new_failures`
+5. For each failed test, create `test-runs/{timestamp}/{testCaseId}/exec-1/result.json` with: status, error, stackTrace, duration, testFile
+6. Print manifest path to stdout. Exit 0 on success, non-zero on failure.
+
+### Incremental Mode (--timestamp + --test-id)
+
+1. Read existing `test-runs/{timestamp}/manifest.json`
+2. Parse new results for the specified test case
+3. Find next execution number and create `exec-N/result.json`
+4. Update manifest: add execution entry, update totalExecutions, finalStatus, and stats
+5. Print manifest path to stdout
+
+### Verify and Document
+
+Run the script against a sample output and verify correct manifest.json structure. Add usage to `./tests/CLAUDE.md`: location, command, and where native test output is found.
+
+### Step 6: App Exploration (Optional) (when browser automation is configured)
+
+Run this step only when the browser automation provider/capability is configured. Otherwise skip remote/provider actions and include the relevant facts in the final output.
+
+If the project has an app URL configured through provider/session data or env vars such as TEST_APP_HOST, use the configured browser automation capability to briefly explore the application. Navigate to the app, identify main navigation and key pages, map discovered features to test coverage from the codebase analysis, and note untested features. Skip if no app URL is available.
+
+### Step 7: Commit Analysis Results
+
+Commit analysis artifacts to the **parent project repository** (the workspace root).
+
+**IMPORTANT — Do NOT stage the `tests` submodule.** The `tests/` directory is an external git submodule. Changes inside it are committed and pushed to the external repo automatically by the post-execution handler. Staging the submodule in the parent would record a broken reference.
+
+Stage only `git add .bugzy/` (analysis report and runtime files), then commit. Do NOT run `git add .` or `git add tests`.
+
+
+### Step 9: Report Results
+
+## Report Results
+
+Ensure your output is comprehensive and includes all information the inbox agent needs to notify the team.
+
+**Include in output:**
+- **Execution summary**: Exact pass/fail counts and test IDs (e.g., "15/18 passed — TC-003, TC-007, TC-012 failed")
+- **Critical failures**: Test ID, verbatim error message, and page URL
+- **Environment issues**: Label as "Environment Issue — non-actionable for customer", group separately
+- **Test adjustments**: Frame positively: "We detected that [feature] changed and automatically updated the test to match"
+- **Mutation Validation**: Suite mutation score (percentage + confidence level), tests validated, time budget used/allocated, top surviving mutation categories, improvement recommendations for low-scoring tests
+- **Bugs discovered** and **clarifications needed**
+
+**Factual accuracy:** Quote exact error messages — never paraphrase. Include verbatim error text (first 200 chars with `[truncated]` if long). State what is missing rather than omitting silently.
+
+Adjust urgency based on severity: brief update if all passed, urgent notification for critical failures.
+
+> Results are delivered by the inbox agent — your output will be read by the inbox agent, which formats and posts the notification.

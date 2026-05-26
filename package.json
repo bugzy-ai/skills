@@ -11,8 +11,9 @@
     "skills"
   ],
   "scripts": {
-    "validate": "node scripts/validate-skills.mjs",
-    "test": "node --test tests/validate-skills.test.mjs"
+    "build:clis": "node scripts/build-clis.mjs",
+    "prepare": "node scripts/setup-git-hooks.mjs",
+    "setup:hooks": "node scripts/setup-git-hooks.mjs"
   },
   "pi": {
     "skills": [

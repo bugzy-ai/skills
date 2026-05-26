@@ -1,0 +1,28 @@
+{
+  "name": "@bugzy-ai/linear-cli",
+  "version": "0.2.0",
+  "description": "CLI tool for interacting with Linear's GraphQL API",
+  "bin": {
+    "linear-cli": "./dist/cli.js"
+  },
+  "main": "./dist/cli.js",
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": ["linear", "graphql", "issues", "cli"],
+  "author": "Bugzy AI",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "files": ["dist"]
+}
