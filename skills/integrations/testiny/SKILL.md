@@ -24,14 +24,6 @@ You manage **test cases, test plans, and test runs** in Testiny.
 ### CREATE
 **Idempotency**: Always `testiny-cli list-cases` first and scan titles. Skip if title already exists (Testiny allows duplicate titles — server will not stop you).
 
-Prefer the structured dispatcher tool when wiring from a task agent:
-
-```
-create_test_case({ projectId, name, path, content })
-```
-
-It routes to Testiny automatically when the project is configured for it and tracks the creation for billing. Equivalent direct CLI:
-
 ```bash
 testiny-cli create-case --name "TC-XXX: Title" --steps "Step 1: ...\nStep 2: ..." --precondition "Logged in" --expected "Dashboard shown"
 ```
@@ -52,16 +44,8 @@ After creating, record the returned numeric id as the test case external referen
 ## Test plans
 
 ### CREATE
-Prefer the dispatcher tool:
-
-```
-create_test_plan({ projectId, name, path, content })
-```
-
-`name` is the plan title; `content` is the description body (supports markdown). The dispatcher routes to Testiny and tracks the creation. Direct CLI equivalent:
-
 ```bash
-testiny-cli create-plan --name "Bugzy SaaS Plan" --description "<markdown body>"
+testiny-cli create-plan --name "Plan Title" --description "<markdown body>"
 ```
 
 ### READ / LIST
@@ -73,13 +57,26 @@ testiny-cli create-plan --name "Bugzy SaaS Plan" --description "<markdown body>"
 
 ## Test runs (Playwright report upload)
 
-After running Playwright via `run_tests` and obtaining a report path, upload it to Testiny:
+After a Playwright run produces `test-runs/{timestamp}/manifest.json`, convert it to JUnit XML and upload to Testiny. The `testiny-importer` binary (official `@testiny/cli`, preinstalled in the child runtime) accepts JUnit but not our custom manifest format.
 
-```
-upload_test_run({ projectId, reportPath })
+### Convert manifest to JUnit XML
+
+```bash
+node -e "
+const m=JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');
+const cases=m.testCases.map(tc=>{const e=tc.executions[tc.executions.length-1];let x='';if(tc.finalStatus==='failed'&&e.error)x='\n      <failure message=\"'+esc(e.error)+'\">'+esc(e.error)+'</failure>';return '    <testcase name=\"'+esc(tc.name)+'\" classname=\"'+esc(tc.id)+'\" time=\"'+(e.duration/1000).toFixed(3)+'\">'+x+'\n    </testcase>';});
+require('fs').writeFileSync(process.argv[2],'<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<testsuites tests=\"'+m.stats.totalTests+'\" failures=\"'+m.stats.failed+'\">\n  <testsuite name=\"Playwright\" tests=\"'+m.stats.totalTests+'\" failures=\"'+m.stats.failed+'\" timestamp=\"'+m.startTime+'\">\n'+cases.join('\n')+'\n  </testsuite>\n</testsuites>\n');
+" test-runs/<TIMESTAMP>/manifest.json /tmp/results.xml
 ```
 
-Routes to `testiny automation <reportPath>` (the official @testiny/cli batch importer, preinstalled in the child runtime). The dispatcher tracks the upload for billing. **No CRUD endpoints on the run resource are exposed via `testiny-cli`** — uploads are file-driven through `@testiny/cli`. In filesystem mode the dispatcher is a no-op (the skill already writes `test-runs/`).
+### Upload
+
+```bash
+testiny-importer automation --junit -P $TESTINY_PROJECT_ID --source bugzy-playwright /tmp/results.xml
+```
+
+**No CRUD endpoints on the run resource are exposed via `testiny-cli`** — uploads are file-driven through `testiny-importer`.
 
 ## Errors
 - **401/403**: STOP, report auth failure (likely invalid `TESTINY_API_KEY` or project-scope mismatch).
