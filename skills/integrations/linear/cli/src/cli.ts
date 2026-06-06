@@ -99,7 +99,8 @@ Resources & Actions:
   label list      [--team KEY]
 
 Environment Variables:
-  LINEAR_API_KEY    Linear API key or OAuth token (required)
+  LINEAR_API_KEY       Linear API key or OAuth token
+  LINEAR_ACCESS_TOKEN  Linear OAuth access token fallback
 
 Options:
   --json            Output raw JSON

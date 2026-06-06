@@ -23,22 +23,22 @@ var import_promises = require("fs/promises");
 
 // src/graphql-client.ts
 var LINEAR_API_URL = "https://api.linear.app/graphql";
-function getApiKey() {
-  const apiKey = process.env.LINEAR_API_KEY;
-  if (!apiKey) {
+function getLinearCredential() {
+  const credential = process.env.LINEAR_API_KEY || process.env.LINEAR_ACCESS_TOKEN;
+  if (!credential) {
     throw new Error(
-      "LINEAR_API_KEY environment variable is required. Set it to your Linear API key or OAuth token."
+      "LINEAR_API_KEY or LINEAR_ACCESS_TOKEN environment variable is required. Set either to your Linear API key or OAuth token."
     );
   }
-  return apiKey;
+  return credential;
 }
 async function query(queryString, variables) {
-  const apiKey = getApiKey();
+  const credential = getLinearCredential();
   const response = await fetch(LINEAR_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: apiKey
+      Authorization: credential
     },
     body: JSON.stringify({ query: queryString, variables })
   });
@@ -904,7 +904,8 @@ Resources & Actions:
   label list      [--team KEY]
 
 Environment Variables:
-  LINEAR_API_KEY    Linear API key or OAuth token (required)
+  LINEAR_API_KEY       Linear API key or OAuth token
+  LINEAR_ACCESS_TOKEN  Linear OAuth access token fallback
 
 Options:
   --json            Output raw JSON

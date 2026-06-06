@@ -1,6 +1,6 @@
 /**
  * Linear GraphQL API client
- * Uses native fetch() with LINEAR_API_KEY authentication
+ * Uses native fetch() with Linear token authentication
  */
 
 import type { GraphQLResponse } from './types';
@@ -8,17 +8,17 @@ import type { GraphQLResponse } from './types';
 const LINEAR_API_URL = 'https://api.linear.app/graphql';
 
 /**
- * Get and validate the Linear API key from environment
+ * Get and validate the Linear credential from environment
  */
-function getApiKey(): string {
-  const apiKey = process.env.LINEAR_API_KEY;
-  if (!apiKey) {
+function getLinearCredential(): string {
+  const credential = process.env.LINEAR_API_KEY || process.env.LINEAR_ACCESS_TOKEN;
+  if (!credential) {
     throw new Error(
-      'LINEAR_API_KEY environment variable is required. ' +
-        'Set it to your Linear API key or OAuth token.'
+      'LINEAR_API_KEY or LINEAR_ACCESS_TOKEN environment variable is required. ' +
+        'Set either to your Linear API key or OAuth token.'
     );
   }
-  return apiKey;
+  return credential;
 }
 
 /**
@@ -28,13 +28,13 @@ export async function query<T>(
   queryString: string,
   variables?: Record<string, unknown>
 ): Promise<T> {
-  const apiKey = getApiKey();
+  const credential = getLinearCredential();
 
   const response = await fetch(LINEAR_API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: apiKey,
+      Authorization: credential,
     },
     body: JSON.stringify({ query: queryString, variables }),
   });

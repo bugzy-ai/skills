@@ -6,6 +6,7 @@ describe('graphql-client', () => {
 
   beforeEach(() => {
     process.env.LINEAR_API_KEY = 'lin_api_test_token';
+    delete process.env.LINEAR_ACCESS_TOKEN;
   });
 
   afterEach(() => {
@@ -14,14 +15,60 @@ describe('graphql-client', () => {
   });
 
   describe('authentication', () => {
-    it('throws when LINEAR_API_KEY is missing', async () => {
+    it('throws when Linear credentials are missing', async () => {
       delete process.env.LINEAR_API_KEY;
-      await expect(query('{ viewer { id } }')).rejects.toThrow(
-        'LINEAR_API_KEY environment variable is required'
-      );
+      delete process.env.LINEAR_ACCESS_TOKEN;
+
+      await expect(query('{ viewer { id } }')).rejects.toThrow(/LINEAR_API_KEY/);
+      await expect(query('{ viewer { id } }')).rejects.toThrow(/LINEAR_ACCESS_TOKEN/);
     });
 
     it('sends API key in Authorization header', async () => {
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: { viewer: { id: '1' } } }),
+      });
+      vi.stubGlobal('fetch', mockFetch);
+
+      await query('{ viewer { id } }');
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://api.linear.app/graphql',
+        expect.objectContaining({
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'lin_api_test_token',
+          },
+        })
+      );
+    });
+
+    it('falls back to LINEAR_ACCESS_TOKEN when LINEAR_API_KEY is missing', async () => {
+      delete process.env.LINEAR_API_KEY;
+      process.env.LINEAR_ACCESS_TOKEN = 'lin_access_test_token';
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: { viewer: { id: '1' } } }),
+      });
+      vi.stubGlobal('fetch', mockFetch);
+
+      await query('{ viewer { id } }');
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://api.linear.app/graphql',
+        expect.objectContaining({
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'lin_access_test_token',
+          },
+        })
+      );
+    });
+
+    it('prefers LINEAR_API_KEY when both credential env vars are present', async () => {
+      process.env.LINEAR_ACCESS_TOKEN = 'lin_access_test_token';
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
         json: () => Promise.resolve({ data: { viewer: { id: '1' } } }),

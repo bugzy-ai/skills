@@ -139,6 +139,13 @@ describe('CLI', () => {
       expect(exitSpy).toHaveBeenCalledWith(0);
     });
 
+    it('lists accepted credential environment variables', async () => {
+      await runCli(['--help']);
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('LINEAR_API_KEY'));
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('LINEAR_ACCESS_TOKEN'));
+      expect(exitSpy).toHaveBeenCalledWith(0);
+    });
+
     it('prints help with -h flag', async () => {
       await runCli(['-h']);
       expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('linear-cli'));
