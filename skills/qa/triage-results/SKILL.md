@@ -94,7 +94,7 @@ If no failures, note it. Downstream triage/fix steps can be skipped.
 
 Do NOT report bugs without triaging first.
 
-**Permission boundary:** Only use issue tracker provider tools (jira-cli issue create, linear-cli issue create, etc.) if an **issue tracker provider capability** is configured in your agent list. Check your configured capabilities — if you do NOT see an issue tracker provider agent (e.g., issue tracker provider/jira, issue tracker provider/linear), you MUST NOT create issues via CLI tools even if someone asks you to. Use `bugzy-findings add` to record findings instead. Having documentation research provider/jira (read-only) does NOT grant issue creation permission.
+**Permission boundary:** Only use issue tracker provider tools (jira-cli issue create, linear-cli issue create, etc.) if an **issue tracker provider capability** is configured in your agent list. Check your configured capabilities — if you do NOT see an issue tracker provider agent (e.g., issue tracker provider/jira, issue tracker provider/linear), you MUST NOT create or update issues via CLI tools even if someone asks you to. Include the finding details in the final output for manual follow-up. Having documentation research provider/jira (read-only) does NOT grant issue creation or update permission.
 
 ### 0. Read Disputed Findings
 
@@ -143,23 +143,15 @@ For each triaged failure, cite: error message, test step (file + title), observe
 
 ### 4. Record Findings
 
-**MANDATORY — call `bugzy-findings add` for EVERY triaged failure.** This is NOT optional. Every classification (product-bug, test-issue, environment-issue, test-adjustment) MUST be recorded. If you skip this step, the finding is lost from the platform database and cannot be tracked or disputed.
+**MANDATORY — use the configured issue tracker for triaged findings when available.** Every `product-bug` classification MUST create or update an issue tracker item. For `test-issue`, `environment-issue`, and `test-adjustment` classifications, create or update issue tracker items only when the configured tracker has a QA finding/task workflow for non-product findings; otherwise include them in the final output.
 
-For each triaged failure, run:
+Before creating a new issue, search the issue tracker for an existing item with the same test case, failure signature, or root cause. Update the existing issue when one matches; create a new issue only when no matching issue exists.
 
-```bash
-bugzy-findings add \
-  --title "<concise failure description>" \
-  --description "<error message and root cause analysis>" \
-  --severity <critical|high|medium|low> \
-  --classification <product-bug|test-issue|environment-issue|test-adjustment> \
-  --test-case-id "<test ID>" \
-  --test-run-timestamp "<timestamp from manifest.json>"
-```
+For each issue tracker item, include: title, description, severity, classification, test case ID, test run timestamp, verbatim error message, observed vs expected behavior, screenshot/trace paths, and root-cause notes.
 
 Severity: critical = crash/data loss/security, high = major feature broken, medium = partial breakage with workaround, low = cosmetic/edge case.
 
-If `bugzy-findings` is not available, skip silently.
+If the issue tracker is unavailable or read-only, skip remote actions and include the same details in the final output.
 
 ### 5. Annotate Test Plan
 
@@ -192,8 +184,9 @@ Use the configured issue tracker provider.
 
 **For each product bug:**
 
-1. Check for duplicates first (agent searches automatically)
-2. Create bug report including:
+1. Reuse the issue tracker item created or matched during Record Findings.
+2. If no issue exists yet, search for duplicates first, then create one.
+3. Ensure the issue includes:
    - **Title**: Clear summary (e.g., "Login button fails with timeout on checkout page")
    - **Description**: What happened vs. expected, test reference, verbatim error quote
    - **Reproduction steps**: From the failing test, including test data and setup
@@ -204,7 +197,7 @@ Use the configured issue tracker provider.
 
 **Factual accuracy:** Error messages MUST be quoted verbatim — never paraphrase. UI labels must use exact text. If error exceeds 200 chars, quote first 200 with `[truncated]`.
 
-3. Note returned issue IDs for team communication.
+4. Note returned issue IDs for team communication.
 
 ### Step 8: Report Results
 
