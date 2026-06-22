@@ -12,7 +12,7 @@ Use this skill when linear is the configured external system for one or more QA 
 
 ## Bundled CLI
 
-This skill bundles @bugzy-ai/linear-cli in `./cli`. Prefer the command examples below when `linear-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
+This skill bundles sdlc-linear-cli in `./cli`. Prefer the command examples below when `linear-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
 
 The bundled CLI authenticates with `LINEAR_API_KEY` or `LINEAR_ACCESS_TOKEN`. Use whichever credential is already provided by the environment; when both are present, `LINEAR_API_KEY` takes precedence.
 

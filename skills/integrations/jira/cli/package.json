@@ -1,7 +1,7 @@
 {
-  "name": "@bugzy-ai/jira-cli",
+  "name": "sdlc-jira-cli",
   "version": "0.1.0",
-  "description": "CLI tool for the Bugzy agent to interact with Jira Cloud REST API v3",
+  "description": "CLI tool for the agent to interact with Jira Cloud REST API v3",
   "bin": {
     "jira-cli": "./dist/cli.js"
   },
@@ -12,8 +12,8 @@
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
-  "keywords": ["bugzy", "jira", "issue-tracker", "agent"],
-  "author": "Bugzy AI",
+  "keywords": ["sdlc", "jira", "issue-tracker", "agent"],
+  "author": "Skill Package Maintainers",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",

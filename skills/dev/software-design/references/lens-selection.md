@@ -20,7 +20,7 @@ Choose the smallest useful design lens before critiquing or planning. The goal i
 | API is awkward, module feels shallow, callers know too much | Complexity / module design | `complexity-modules.md` |
 | Dependency direction, layers, adapters, infrastructure coupling | Architecture boundaries | `architecture-boundaries.md` |
 | Business terms, aggregates, context boundaries, domain events | DDD | `domain-driven-design.md` |
-| Design choice has lasting consequences or multiple credible options | ADR | `adr-template.md` |
+| Design choice has lasting architecture consequences | Architecture decision | Escalate to the architect workflow |
 | Risk of overengineering, premature abstraction, speculative flexibility | Simplicity | `simplicity-principles.md` |
 
 ## Combine Lenses Sparingly
@@ -30,7 +30,7 @@ Good combinations:
 - Refactoring + Clean Code for long methods, duplication, or naming work.
 - Complexity + Architecture Boundaries for module/API boundary redesign.
 - DDD + Architecture Boundaries for business capability boundaries.
-- ADR + any other lens when the decision is durable.
+- Architecture decision + any other lens when the decision is durable.
 - Simplicity + any lens as an anti-overengineering check.
 
 Avoid combinations that create process overhead without changing the recommendation.

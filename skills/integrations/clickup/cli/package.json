@@ -1,7 +1,7 @@
 {
-  "name": "@bugzy-ai/clickup-cli",
+  "name": "sdlc-clickup-cli",
   "version": "0.1.0",
-  "description": "CLI tool for the Bugzy agent to interact with ClickUp's REST API",
+  "description": "CLI tool for the agent to interact with ClickUp's REST API",
   "bin": {
     "clickup-cli": "./dist/cli.js"
   },
@@ -12,8 +12,8 @@
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
-  "keywords": ["bugzy", "clickup", "issue-tracker", "agent"],
-  "author": "Bugzy AI",
+  "keywords": ["sdlc", "clickup", "issue-tracker", "agent"],
+  "author": "Skill Package Maintainers",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",

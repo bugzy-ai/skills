@@ -1,7 +1,7 @@
 {
-  "name": "@bugzy-ai/azure-devops-cli",
+  "name": "sdlc-azure-devops-cli",
   "version": "0.1.0",
-  "description": "CLI tool for the Bugzy agent to interact with Azure DevOps Work Item Tracking API",
+  "description": "CLI tool for the agent to interact with Azure DevOps Work Item Tracking API",
   "bin": {
     "azure-devops-cli": "./dist/cli.js"
   },
@@ -12,8 +12,8 @@
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
-  "keywords": ["bugzy", "azure-devops", "issue-tracker", "agent"],
-  "author": "Bugzy AI",
+  "keywords": ["sdlc", "azure-devops", "issue-tracker", "agent"],
+  "author": "Skill Package Maintainers",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",

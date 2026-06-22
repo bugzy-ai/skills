@@ -1,6 +1,6 @@
 /**
  * notion-cli — CLI for Notion REST API
- * Used by Bugzy agents for documentation research and issue tracking
+ * Used by agents for documentation research and issue tracking
  * Zero runtime dependencies, JSON-only output
  */
 

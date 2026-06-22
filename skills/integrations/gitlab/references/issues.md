@@ -1,7 +1,7 @@
 # GitLab Integration: Issue tracking
 # GitLab Issue Tracking
 
-Use this skill as the provider-specific operating guide for the configured Bugzy capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
+Use this skill as the provider-specific operating guide for the configured capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
 
 ## Operating instructions
 
@@ -20,7 +20,7 @@ All operations use `glab api`. Every call MUST include `-H "Authorization: Beare
 - **Search**: `glab api -H "Authorization: Bearer $GITLAB_TOKEN" "/projects/${GITLAB_PROJECT_ID}/issues?search={query}&state=opened"`
 - **List labels**: `glab api -H "Authorization: Bearer $GITLAB_TOKEN" "/projects/${GITLAB_PROJECT_ID}/labels"`
 
-**Attribution:** Prefix comments and descriptions with "[Bugzy]:" to identify automated actions. Do NOT prefix issue titles — keep them clean (e.g., "Bug: Login timeout").
+**Attribution:** Prefix comments and descriptions with "[Automated]:" to identify automated actions. Do NOT prefix issue titles — keep them clean (e.g., "Bug: Login timeout").
 
 ## Workflow
 

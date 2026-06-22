@@ -12,7 +12,7 @@ Use this skill when azure-devops is the configured external system for one or mo
 
 ## Bundled CLI
 
-This skill bundles @bugzy-ai/azure-devops-cli in `./cli`. Prefer the command examples below when `azure-devops-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
+This skill bundles sdlc-azure-devops-cli in `./cli`. Prefer the command examples below when `azure-devops-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
 
 ## References
 

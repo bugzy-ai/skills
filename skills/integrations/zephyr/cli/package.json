@@ -1,7 +1,7 @@
 {
-  "name": "@bugzy-ai/zephyr-cli",
+  "name": "sdlc-zephyr-cli",
   "version": "0.1.0",
-  "description": "CLI tool for the Bugzy agent to interact with Zephyr Scale Cloud REST API",
+  "description": "CLI tool for the agent to interact with Zephyr Scale Cloud REST API",
   "bin": {
     "zephyr-cli": "./dist/cli.js"
   },
@@ -12,8 +12,8 @@
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
-  "keywords": ["bugzy", "zephyr", "test-management", "agent"],
-  "author": "Bugzy AI",
+  "keywords": ["sdlc", "zephyr", "test-management", "agent"],
+  "author": "Skill Package Maintainers",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",

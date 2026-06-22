@@ -12,7 +12,7 @@ Use this skill when notion is the configured external system for one or more QA 
 
 ## Bundled CLI
 
-This skill bundles @bugzy-ai/notion-cli in `./cli`. Prefer the command examples below when `notion-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
+This skill bundles sdlc-notion-cli in `./cli`. Prefer the command examples below when `notion-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
 
 ## References
 

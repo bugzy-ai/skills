@@ -1,7 +1,7 @@
 # Asana Integration: Issue tracking
 # Asana Issue Tracking
 
-Use this skill as the provider-specific operating guide for the configured Bugzy capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
+Use this skill as the provider-specific operating guide for the configured capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
 
 ## Operating instructions
 
@@ -22,7 +22,7 @@ Add `--json` for structured JSON output when parsing is needed.
 
 **Hierarchy:** Workspace → Space → Folder → List → Task. Task creation requires a project GID (LIST_ID level).
 
-**Attribution:** Prefix comments and descriptions with "[Bugzy]:" to identify automated actions. Do NOT prefix task names — keep them clean (e.g., "Bug: Login timeout").
+**Attribution:** Prefix comments and descriptions with "[Automated]:" to identify automated actions. Do NOT prefix task names — keep them clean (e.g., "Bug: Login timeout").
 
 ## Workflow
 

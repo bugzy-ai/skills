@@ -99,5 +99,5 @@ Before proposing acceptance:
 ## Output Snippet
 
 ```markdown
-Docs/ADR impact: Required. This changes the data-access boundary for generated documents and affects future storage integrations. Add `docs/adr/NNN-document-storage-boundary.md` or update the existing data-access LLD if that is the repo convention.
+Architecture decision impact: Required. This changes the data-access boundary for generated documents and affects future storage integrations. Add `docs/adr/NNN-document-storage-boundary.md` or update the existing data-access LLD if that is the repo convention.
 ```

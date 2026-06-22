@@ -5,7 +5,7 @@ description: Verify code or product changes with black-box scope analysis, targe
 
 # Verify Changes
 
-Follow this workflow in order. The skill body is self-contained: use the user's request, repository files, runtime artifacts, and configured Bugzy capabilities/providers available in the current session.
+Follow this workflow in order. The skill body is self-contained: use the user's request, repository files, runtime artifacts, and configured capabilities/providers available in the current session.
 
 ## Capability and provider usage
 
@@ -256,7 +256,7 @@ Do NOT report bugs without triaging first.
 ### 0. Read Disputed Findings
 
 ```bash
-cat .bugzy/runtime/disputed-findings.md 2>/dev/null || echo "No disputed findings found"
+cat .sdlc/runtime/disputed-findings.md 2>/dev/null || echo "No disputed findings found"
 ```
 
 If it exists, use it to avoid repeating past triage mistakes.
@@ -324,7 +324,7 @@ Use the configured test automation engineering capability.
 
 Provide for each: test run timestamp, test case ID, test name, error message, and execution details path (`test-runs/{timestamp}/{testCaseId}/exec-1/`).
 
-The configured capability should analyze the failure, apply fix patterns from `./tests/CLAUDE.md`, and rerun. In BYOT mode (no `reporters/bugzy-reporter.ts`), run parse script to update manifest after each rerun:
+The configured capability should analyze the failure, apply fix patterns from `./tests/CLAUDE.md`, and rerun. In BYOT mode (no `reporters/test-reporter.ts`), run parse script to update manifest after each rerun:
 `npx tsx reporters/parse-results.ts --input <output> --timestamp <current> --test-id <testCaseId>`
 
 Retry up to 3 times (exec-1, exec-2, exec-3). If still failing after 3 attempts, reclassify as potential product bug.

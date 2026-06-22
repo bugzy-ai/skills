@@ -1,13 +1,13 @@
-# Bugzy Skills
+# SDLC Skills
 
-Public installable pi skill package for Bugzy's reusable QA capabilities.
+Public installable pi skill package for reusable QA, architecture, and development capabilities.
 
 ## Install
 
 Install from GitHub:
 
 ```bash
-pi install git:github.com/bugzy-ai/skills@main
+pi install git:<repository-url>#main
 ```
 
 Install from a local checkout while developing:
@@ -29,11 +29,13 @@ The loaded `SKILL.md` body is the executable operating guide. It must be self-co
 
 ## Layout
 
+- `skills/architect/**` — architecture decision capabilities such as ADR discussions and durable architecture records.
+- `skills/dev/**` — software-development capabilities such as software design, code comments, and UI implementation guidance.
 - `skills/integrations/**` — external systems such as Jira, Linear, GitHub, Notion, Zephyr, and Testiny.
   - Multi-purpose integrations use `references/` for distinct workflows such as issues, documentation, or source control.
   - Single-purpose integrations keep all instructions in `SKILL.md`.
   - Integrations with local support tools bundle the matching CLI under `cli/`.
-- `skills/qa/**` — QA role workflows and QA capabilities, including test planning, case generation, execution, triage, verification, filesystem test cases, and test automation.
+- `skills/qa/**` — QA role workflows and QA capabilities, including test strategy, test planning, case generation, execution, triage, verification, filesystem test cases, and test automation.
 - `skills/shared/**` — reusable non-integration capabilities such as browser automation.
 - `skills/onboarding/**`, `skills/communication/**`, and `skills/events/**` — workflow skills for onboarding, message handling, and system events.
 
@@ -46,6 +48,6 @@ Integration CLI packages are copied into the corresponding skill at `skills/inte
 ## Scope boundaries
 
 - Author skills directly in this repository.
-- Keep integration skills grouped by system, not by Bugzy role.
+- Keep integration skills grouped by system, not by workflow role.
 - Keep reference files only when an integration has multiple distinct use cases.
 - Team chat delivery is handled outside this public skills package.

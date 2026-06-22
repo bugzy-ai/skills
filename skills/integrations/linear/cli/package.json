@@ -1,5 +1,5 @@
 {
-  "name": "@bugzy-ai/linear-cli",
+  "name": "sdlc-linear-cli",
   "version": "0.2.0",
   "description": "CLI tool for interacting with Linear's GraphQL API",
   "bin": {
@@ -13,7 +13,7 @@
     "type-check": "tsc --noEmit"
   },
   "keywords": ["linear", "graphql", "issues", "cli"],
-  "author": "Bugzy AI",
+  "author": "Skill Package Maintainers",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",

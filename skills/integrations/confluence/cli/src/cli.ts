@@ -1,6 +1,6 @@
 /**
  * confluence-cli — Read-only CLI for Confluence Cloud REST API
- * Used by Bugzy agents for documentation research
+ * Used by agents for documentation research
  * Zero runtime dependencies, JSON-only output
  */
 

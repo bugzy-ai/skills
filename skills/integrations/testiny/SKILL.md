@@ -5,11 +5,11 @@ description: Manage Testiny cases, plans, suites, and run uploads. Use when Test
 
 # Testiny Test Artifact Management
 
-Use this skill as the provider-specific operating guide for the configured Bugzy capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
+Use this skill as the provider-specific operating guide for the configured capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
 
 ## Bundled CLI
 
-This skill bundles @bugzy-ai/testiny-cli in `./cli`. Prefer the command examples below when `testiny-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
+This skill bundles sdlc-testiny-cli in `./cli`. Prefer the command examples below when `testiny-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
 
 ## Operating instructions
 
@@ -73,7 +73,7 @@ require('fs').writeFileSync(process.argv[2],'<?xml version=\"1.0\" encoding=\"UT
 ### Upload
 
 ```bash
-testiny-importer automation --junit -P $TESTINY_PROJECT_ID --source bugzy-playwright /tmp/results.xml
+testiny-importer automation --junit -P $TESTINY_PROJECT_ID --source sdlc-playwright /tmp/results.xml
 ```
 
 **No CRUD endpoints on the run resource are exposed via `testiny-cli`** — uploads are file-driven through `testiny-importer`.

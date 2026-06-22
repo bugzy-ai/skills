@@ -1,6 +1,6 @@
 /**
  * clickup-cli — CLI tool for interacting with ClickUp's REST API v2
- * Used by Bugzy agents for issue tracking
+ * Used by agents for issue tracking
  */
 
 import { searchTasks, getTask, createTask, updateTask, commentTask } from './commands/task';

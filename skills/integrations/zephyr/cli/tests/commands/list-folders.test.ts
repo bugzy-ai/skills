@@ -20,7 +20,7 @@ describe('list-folders', () => {
 
   it('lists folders and outputs JSON', async () => {
     const response = {
-      values: [{ id: 1, name: 'Bugzy Tests', folderType: 'TEST_CASE' }],
+      values: [{ id: 1, name: 'Generated Tests', folderType: 'TEST_CASE' }],
       total: 1, startAt: 0, maxResults: 100, isLast: true,
     };
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(mockOk(response)));

@@ -39,11 +39,11 @@ describe('create-folder', () => {
   });
 
   it('creates a folder and outputs JSON', async () => {
-    const folder = { id: 123, name: 'Bugzy Tests', folderType: 'TEST_CASE' };
+    const folder = { id: 123, name: 'Generated Tests', folderType: 'TEST_CASE' };
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(mockOk(folder)));
     const writeSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => true);
 
-    await createFolder({ project: 'PROJ', name: 'Bugzy Tests', type: 'TEST_CASE' });
+    await createFolder({ project: 'PROJ', name: 'Generated Tests', type: 'TEST_CASE' });
 
     expect(writeSpy).toHaveBeenCalledWith(JSON.stringify(folder, null, 2));
   });

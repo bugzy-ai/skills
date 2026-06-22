@@ -5,11 +5,11 @@ description: Search Confluence read-only for product documentation, requirements
 
 # Confluence Documentation Research
 
-Use this skill as the provider-specific operating guide for the configured Bugzy capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
+Use this skill as the provider-specific operating guide for the configured capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
 
 ## Bundled CLI
 
-This skill bundles @bugzy-ai/confluence-cli in `./cli`. Prefer the command examples below when `confluence-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
+This skill bundles sdlc-confluence-cli in `./cli`. Prefer the command examples below when `confluence-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
 
 ## Operating instructions
 

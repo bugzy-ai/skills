@@ -12,7 +12,7 @@ Use this skill when asana is the configured external system for one or more QA w
 
 ## Bundled CLI
 
-This skill bundles @bugzy-ai/asana-cli in `./cli`. Prefer the command examples below when `asana-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
+This skill bundles sdlc-asana-cli in `./cli`. Prefer the command examples below when `asana-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
 
 ## References
 

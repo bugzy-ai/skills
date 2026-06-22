@@ -2,12 +2,14 @@
 
 ## Source of truth
 
-Author skill changes directly in this repository. The checked-in `skills/**` tree is the public installable package for reusable Bugzy QA capabilities.
+Author skill changes directly in this repository. The checked-in `skills/**` tree is the public installable package for reusable SDLC QA, architecture, and development capabilities.
 
 Do not create generated source mirrors or temporary mapping artifacts. Keep each skill ready for `pi install ./` from a local checkout.
 
 ## Taxonomy
 
+- `skills/architect/<capability>/` contains architecture-level skills such as ADR discussions and durable architecture records.
+- `skills/dev/<capability>/` contains reusable software-development skills such as software design, code comments, and implementation guidance.
 - `skills/integrations/<system>/` contains external-system skills.
 - `skills/qa/<workflow>/` contains QA workflows and QA capabilities.
 - `skills/shared/<capability>/` contains reusable capabilities that are not external integrations or QA workflows.
@@ -29,7 +31,7 @@ Use `references/` only for integrations with multiple distinct use cases. Single
 ## Review checklist
 
 - Every skill `name` matches its folder.
-- No skill name starts with `bugzy-`.
+- No skill name starts with `sdlc-`.
 - Integration skills are grouped by external system.
 - Multi-purpose integrations have focused reference files; single-purpose integrations do not.
 - Bundled CLIs respond to `node skills/integrations/<system>/cli/dist/cli.js --help`.

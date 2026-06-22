@@ -12,7 +12,7 @@ Use this skill when jira is the configured external system for one or more QA wo
 
 ## Bundled CLI
 
-This skill bundles @bugzy-ai/jira-cli in `./cli`. Prefer the command examples below when `jira-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
+This skill bundles sdlc-jira-cli in `./cli`. Prefer the command examples below when `jira-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
 
 ## References
 

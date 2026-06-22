@@ -1,7 +1,7 @@
 {
-  "name": "@bugzy-ai/notion-cli",
+  "name": "sdlc-notion-cli",
   "version": "0.1.0",
-  "description": "CLI tool for the Bugzy agent to interact with the Notion REST API",
+  "description": "CLI tool for the agent to interact with the Notion REST API",
   "bin": {
     "notion-cli": "./dist/cli.js"
   },
@@ -12,8 +12,8 @@
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
-  "keywords": ["bugzy", "notion", "documentation", "agent"],
-  "author": "Bugzy AI",
+  "keywords": ["sdlc", "notion", "documentation", "agent"],
+  "author": "Skill Package Maintainers",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",

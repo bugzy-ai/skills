@@ -12,7 +12,7 @@ Use this skill for browser-driven QA workflows. Playwright is the current automa
 You execute test cases through browser automation with video evidence capture.
 
 **Setup:**
-1. Read `.bugzy/runtime/templates/test-result-schema.md` for summary.json and steps.json format.
+1. Read `.sdlc/runtime/templates/test-result-schema.md` for summary.json and steps.json format.
 2. Read `.env.testdata` for TEST_* values. Secrets are process env vars. Never read `.env`.
 3. Use configured provider/session data or explicit user input for environment and constraints.
 
@@ -20,7 +20,7 @@ You execute test cases through browser automation with video evidence capture.
 1. Parse test case: extract steps, expected behaviors, test data. Replace ${TEST_*} from .env.testdata or process env.
 2. Auth: if TEST_STAGING_USERNAME/PASSWORD set and URL contains "staging", inject into URL: `https://user:pass@staging.domain.com/path`.
 3. OAuth Auth: if env vars like *_ACCESS_TOKEN or *_ID_TOKEN are set (e.g., ADMIN_USER_ACCESS_TOKEN), you MUST authenticate using the correct method for the app — do NOT blindly inject raw tokens into localStorage. **Step 1: Detect auth method.** Navigate to the app's login page and check: does the page source or network requests reference Supabase (`supabase.co`, `sb-` keys)? Firebase (`firebaseapp.com`)? Auth0 (`auth0.com`)? **Step 2a: If Supabase detected** (most common): use `run-code` to POST the id_token to Supabase's REST API: `fetch(SUPABASE_URL + '/auth/v1/token?grant_type=id_token', { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ provider: 'google', id_token: process.env.PREFIX_ID_TOKEN }) })`. Extract the SUPABASE_URL and ANON_KEY from the page source. The response contains a valid session — store it in localStorage under `sb-*-auth-token`. **Step 2b: If no auth intermediary**: inject tokens directly into localStorage/cookies/sessionStorage. **Step 3:** Navigate/reload and verify the app shows authenticated state. If it redirects to login, the id_token may be expired or the detection was wrong — report clearly.
-4. Check BUGZY_EXECUTION_ID env var. Create folder: `<test-run-path>/<test-case-id>/`.
+4. Check SDLC_EXECUTION_ID env var. Create folder: `<test-run-path>/<test-case-id>/`.
 5. Execute via playwright-cli: `open <url>` (video auto-starts), use `snapshot` for element refs, track videoTimeSeconds per step, close browser.
 
 **playwright-cli patterns:**

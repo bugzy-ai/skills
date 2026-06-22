@@ -1,7 +1,7 @@
 {
-  "name": "@bugzy-ai/figma-cli",
+  "name": "sdlc-figma-cli",
   "version": "0.1.0",
-  "description": "Read-only CLI tool for the Bugzy agent to interact with Figma REST API",
+  "description": "Read-only CLI tool for the agent to interact with Figma REST API",
   "bin": {
     "figma-cli": "./dist/cli.js"
   },
@@ -12,8 +12,8 @@
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
-  "keywords": ["bugzy", "figma", "design", "agent"],
-  "author": "Bugzy AI",
+  "keywords": ["sdlc", "figma", "design", "agent"],
+  "author": "Skill Package Maintainers",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",

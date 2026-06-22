@@ -1,7 +1,7 @@
 {
-  "name": "@bugzy-ai/testiny-cli",
+  "name": "sdlc-testiny-cli",
   "version": "0.2.2",
-  "description": "CLI tool for the Bugzy agent to interact with the Testiny REST API",
+  "description": "CLI tool for the agent to interact with the Testiny REST API",
   "bin": {
     "testiny-cli": "./dist/cli.js"
   },
@@ -12,8 +12,8 @@
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
-  "keywords": ["bugzy", "testiny", "test-management", "agent"],
-  "author": "Bugzy AI",
+  "keywords": ["sdlc", "testiny", "test-management", "agent"],
+  "author": "Skill Package Maintainers",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",

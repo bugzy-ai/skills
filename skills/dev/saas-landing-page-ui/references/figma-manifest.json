@@ -1,0 +1,106 @@
+{
+  "file": {
+    "name": "4 levels",
+    "key": "yzPbFcv1lNAiIbqFh5P1aX",
+    "lastModified": "2026-05-26T05:47:18Z",
+    "version": "2357764787818665722",
+    "roleAtCapture": "owner",
+    "editorType": "figma"
+  },
+  "page": {
+    "id": "0:1",
+    "name": "Page 1",
+    "topLevelFrameCount": 9
+  },
+  "capture": {
+    "capturedAt": "2026-05-27T03:18:16Z",
+    "imageExportScale": 0.5,
+    "imageFormat": "png",
+    "nodeCounts": {
+      "FRAME": 1296,
+      "TEXT": 1153,
+      "VECTOR": 5770,
+      "RECTANGLE": 205,
+      "GROUP": 196,
+      "ELLIPSE": 143
+    },
+    "components": [],
+    "componentSets": [],
+    "styles": []
+  },
+  "frames": [
+    {
+      "id": "1:4250",
+      "name": "Level 1",
+      "role": "anti-pattern: basic/template baseline",
+      "size": { "width": 1440, "height": 3656 },
+      "position": { "x": -4620, "y": 0 },
+      "localRender": "references/renders/level-1.png"
+    },
+    {
+      "id": "1:4345",
+      "name": "Level 2",
+      "role": "progression: intentional identity and product visuals",
+      "size": { "width": 1440, "height": 4472 },
+      "position": { "x": -3080, "y": 0 },
+      "localRender": "references/renders/level-2.png"
+    },
+    {
+      "id": "1:3369",
+      "name": "Level 3",
+      "role": "progression: cohesive product-led experience",
+      "size": { "width": 1440, "height": 4472 },
+      "position": { "x": -1540, "y": 0 },
+      "localRender": "references/renders/level-3.png"
+    },
+    {
+      "id": "1:2",
+      "name": "Level 4",
+      "role": "golden reference: crafted/professional landing page",
+      "size": { "width": 1440, "height": 4472 },
+      "position": { "x": 0, "y": 0 },
+      "localRender": "references/renders/level-4.png"
+    },
+    {
+      "id": "2:429",
+      "name": "Level 4",
+      "role": "supplemental Level 4 section state",
+      "size": { "width": 1440, "height": 876.7999877929688 },
+      "position": { "x": 0, "y": 4502 },
+      "localRender": "references/renders/level-4-mid.png"
+    },
+    {
+      "id": "2:221",
+      "name": "Level 4",
+      "role": "supplemental Level 4 bottom section state",
+      "size": { "width": 1440, "height": 876.7999877929688 },
+      "position": { "x": 0, "y": 5457 },
+      "localRender": "references/renders/level-4-bottom.png"
+    },
+    {
+      "id": "2:649",
+      "name": "Level 4 - customers hover",
+      "role": "interaction reference: social proof hover reveal",
+      "size": { "width": 1801, "height": 1068 },
+      "position": { "x": 1540, "y": 244 },
+      "localRender": "references/renders/level-4-customers-hover.png"
+    },
+    {
+      "id": "2:1308",
+      "name": "Mega menu 1",
+      "role": "interaction reference: product mega menu",
+      "size": { "width": 971.25, "height": 325 },
+      "position": { "x": 3558, "y": 318 },
+      "localRender": "references/renders/mega-menu-1.png"
+    },
+    {
+      "id": "2:1464",
+      "name": "Mega menu 2",
+      "role": "interaction reference: resource/company mega menu",
+      "size": { "width": 977.5, "height": 325 },
+      "position": { "x": 3558, "y": 770 },
+      "localRender": "references/renders/mega-menu-2.png"
+    }
+  ]
+}
+

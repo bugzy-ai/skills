@@ -1,6 +1,6 @@
 /**
  * zephyr-cli — CLI tool for interacting with the Zephyr Scale Cloud REST API v2
- * Used by Bugzy agents for test case management
+ * Used by agents for test case management
  */
 
 import { createCase } from './commands/create-case';

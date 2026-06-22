@@ -1,0 +1,25 @@
+{
+  "capturedAt": "2026-05-27T03:18:16Z",
+  "video": {
+    "title": "The 4 Levels of SaaS Landing Page UI Design",
+    "url": "https://www.youtube.com/watch?v=eMMiLeo_UGI",
+    "author": "Kole Jain",
+    "durationSeconds": 598,
+    "chapters": [
+      { "title": "Level 1", "startSeconds": 0, "endSeconds": 136 },
+      { "title": "Level 2", "startSeconds": 136, "endSeconds": 289 },
+      { "title": "Level 3", "startSeconds": 289, "endSeconds": 441 },
+      { "title": "Level 4", "startSeconds": 441, "endSeconds": 598 }
+    ]
+  },
+  "figma": {
+    "name": "4 levels",
+    "url": "https://www.figma.com/design/yzPbFcv1lNAiIbqFh5P1aX/4-levels?node-id=0-1&p=f&t=SdTokd4rTC4LeDap-0",
+    "fileKey": "yzPbFcv1lNAiIbqFh5P1aX",
+    "lastModified": "2026-05-26T05:47:18Z",
+    "version": "2357764787818665722",
+    "page": { "id": "0:1", "name": "Page 1" },
+    "localReferenceDirectory": "references/renders"
+  }
+}
+

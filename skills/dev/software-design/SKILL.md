@@ -1,6 +1,6 @@
 ---
 name: software-design
-description: Guides software design, architecture critique, clean-code review, design-pattern selection, and safe refactoring. Use when designing features, evaluating architecture, planning refactors, reviewing module boundaries, writing ADRs, or applying SOLID, Clean Architecture, DDD, KISS, DRY, YAGNI, TDD, design patterns, or complexity-management principles.
+description: Guides software design, clean-code review, design-pattern selection, extensibility decisions, abstraction trade-offs, and safe refactoring. Use when designing features, evaluating module boundaries, deciding what should be extensible or intentionally simple, planning refactors, reviewing code smells, or applying SOLID, KISS, DRY, YAGNI, TDD, design patterns, or complexity-management principles.
 license: MIT
 metadata:
   version: "2.0.0"
@@ -8,7 +8,14 @@ metadata:
 
 # Software Design
 
-Use this skill for design-quality work: architecture reasoning, design critique, module boundaries, API shape, pattern selection, and behavior-preserving refactoring plans. It is not a raw code-generation shortcut.
+Use this skill for design-quality work: internal design critique, module
+boundaries, API shape, pattern selection, extensibility decisions, abstraction
+trade-offs, and behavior-preserving refactoring plans. It is not a raw
+code-generation shortcut.
+
+For durable architecture decisions that need ADRs, use the architect-level
+architecture decision workflow instead. This skill handles local/internal design
+decisions that usually belong in the task plan rather than an ADR.
 
 Understand the repository and critique the current design before synthesizing recommendations or editing code.
 
@@ -16,10 +23,14 @@ Understand the repository and critique the current design before synthesizing re
 
 Use this skill for:
 
-- Architecture review, feature design, and service or module boundary decisions.
+- Feature design and service or module boundary decisions below the ADR level.
 - Code-quality critique involving SOLID, Clean Code, KISS, DRY, YAGNI, TDD, or design patterns.
+- Planning discussions about what should be extensible, what should remain
+  simple, which abstractions to use or avoid, and which existing pattern to
+  follow.
 - Refactor planning, preparatory refactoring, and behavior-preserving migrations.
-- Clean Architecture, DDD, ports/adapters, layering, dependency direction, and ADR work.
+- Clean Architecture, DDD, ports/adapters, layering, and dependency direction
+  when the question is still an implementation-design concern.
 - API/interface design, deep-module design, information hiding, and complexity reduction.
 
 Skip it for trivial single-file fixes where the design surface is obvious.
@@ -33,7 +44,8 @@ Skip it for trivial single-file fixes where the design surface is obvious.
 - Preserve behavior during refactors unless the user explicitly requests behavior change.
 - Recommend abstractions only when they reduce current complexity, protect a volatile boundary, or make a required variation explicit.
 - Verify with the repo's existing build, type-check, test, lint, static-analysis, and security checks.
-- Record durable architecture or behavior decisions in the relevant docs or ADRs.
+- Escalate durable architecture decisions to the architect workflow. Record
+  internal software-design decisions in the task plan or relevant docs.
 
 ## Required Workflow
 
@@ -44,7 +56,22 @@ Skip it for trivial single-file fixes where the design surface is obvious.
 5. **Present options for non-trivial decisions.** Include pros, cons, risks, and when to choose each option.
 6. **Plan small stages.** Use behavior-preserving checkpoints, rollback points, and verification after meaningful changes.
 7. **Implement only the requested scope.** Avoid opportunistic rewrites, speculative layers, and unrelated cleanup.
-8. **Verify and document.** Run practical checks and identify docs/ADR updates.
+8. **Verify and document.** Run practical checks and identify relevant docs updates.
+
+For planning-decision requests, produce a compact `### Software Design
+Decisions` section instead of a full design critique:
+
+```markdown
+### Software Design Decisions
+
+#### <Decision title>
+- Decision: <chosen option>
+- Extensible: <what is intentionally open to variation>
+- Intentionally not extensible: <what stays simple/closed>
+- Existing pattern to follow: <path or none>
+- Pattern/abstraction to avoid: <if applicable>
+- Consequences: <coupling, duplication, readability, future-change trade-offs>
+```
 
 ## Lens Reference Map
 
@@ -60,7 +87,6 @@ Load reference files only when relevant:
 | API/module design, deep modules, information hiding, complexity signals | [complexity-modules.md](references/complexity-modules.md) |
 | Layering, dependency rule, ports/adapters, component boundaries | [architecture-boundaries.md](references/architecture-boundaries.md) |
 | Domain modeling, bounded contexts, aggregates, domain events | [domain-driven-design.md](references/domain-driven-design.md) |
-| Durable decisions, architecture options, consequences | [adr-template.md](references/adr-template.md) |
 
 ## Design Gates
 
@@ -94,8 +120,10 @@ For design or review requests, return:
 6. Recommended approach.
 7. Implementation stages.
 8. Verification gates.
-9. Docs/ADR impact.
+9. Docs impact.
 
-For implementation planning, include exact files to touch and commands to run.
+For decision-focused implementation planning, return the compact Software Design
+Decisions section above. For full refactor planning, include the concrete files,
+stages, and verification gates needed to keep behavior unchanged.
 
 For code-review-style findings, cite `file_path:line_number` and prioritize issues by severity.

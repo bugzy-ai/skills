@@ -1,7 +1,7 @@
 # GitLab Integration: Source control
 # GitLab Source Control
 
-Use this skill as the provider-specific operating guide for the configured Bugzy capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
+Use this skill as the provider-specific operating guide for the configured capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
 
 ## Operating instructions
 
@@ -33,7 +33,7 @@ glab api -H "Authorization: Bearer $GITLAB_TOKEN" "/projects/${GITLAB_PROJECT_ID
 # MR comment:
 glab api -X POST -H "Authorization: Bearer $GITLAB_TOKEN" -f body="..." "/projects/${GITLAB_PROJECT_ID}/merge_requests/{iid}/notes"
 # Commit status (states: pending, running, success, failed):
-glab api -X POST -H "Authorization: Bearer $GITLAB_TOKEN" "/projects/${GITLAB_PROJECT_ID}/statuses/{sha}" -f state="success" -f name="Bugzy QA" -f description="..."
+glab api -X POST -H "Authorization: Bearer $GITLAB_TOKEN" "/projects/${GITLAB_PROJECT_ID}/statuses/{sha}" -f state="success" -f name="QA" -f description="..."
 ```
 
 ## Workflow

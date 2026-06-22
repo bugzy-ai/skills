@@ -1,7 +1,7 @@
 {
-  "name": "@bugzy-ai/confluence-cli",
+  "name": "sdlc-confluence-cli",
   "version": "0.1.0",
-  "description": "Read-only CLI tool for the Bugzy agent to interact with Confluence Cloud REST API",
+  "description": "Read-only CLI tool for the agent to interact with Confluence Cloud REST API",
   "bin": {
     "confluence-cli": "./dist/cli.js"
   },
@@ -12,8 +12,8 @@
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
-  "keywords": ["bugzy", "confluence", "documentation", "agent"],
-  "author": "Bugzy AI",
+  "keywords": ["sdlc", "confluence", "documentation", "agent"],
+  "author": "Skill Package Maintainers",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.0.0",

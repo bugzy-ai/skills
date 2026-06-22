@@ -5,7 +5,7 @@ description: Read and update GitHub pull request, commit, comparison, comment, a
 
 # GitHub Source Control
 
-Use this skill as the provider-specific operating guide for the configured Bugzy capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
+Use this skill as the provider-specific operating guide for the configured capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
 
 ## Tooling
 
@@ -35,7 +35,7 @@ gh api /repos/{owner}/{repo}/compare/{base}...{head}
 ```bash
 gh pr comment {number} --repo {owner}/{repo} --body "comment"
 # Create check run:
-gh api --method POST /repos/{owner}/{repo}/check-runs -f name="Bugzy QA / Preview Tests" -f head_sha="{sha}" -f status="in_progress"
+gh api --method POST /repos/{owner}/{repo}/check-runs -f name="QA / Preview Tests" -f head_sha="{sha}" -f status="in_progress"
 # Complete check run:
 gh api --method PATCH /repos/{owner}/{repo}/check-runs/{id} -f status="completed" -f conclusion="success|failure" -f "output[title]=..." -f "output[summary]=..."
 ```

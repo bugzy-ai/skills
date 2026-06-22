@@ -5,7 +5,7 @@ description: Verify a deployed preview or environment with scoped automated test
 
 # Verify Changes on Deployment
 
-Follow this workflow in order. The skill body is self-contained: use the user's request, repository files, runtime artifacts, and configured Bugzy capabilities/providers available in the current session.
+Follow this workflow in order. The skill body is self-contained: use the user's request, repository files, runtime artifacts, and configured capabilities/providers available in the current session.
 
 ## Capability and provider usage
 
@@ -248,7 +248,7 @@ Do NOT report bugs without triaging first.
 ### 0. Read Disputed Findings
 
 ```bash
-cat .bugzy/runtime/disputed-findings.md 2>/dev/null || echo "No disputed findings found"
+cat .sdlc/runtime/disputed-findings.md 2>/dev/null || echo "No disputed findings found"
 ```
 
 If it exists, use it to avoid repeating past triage mistakes.
@@ -316,7 +316,7 @@ Use the configured test automation engineering capability.
 
 Provide for each: test run timestamp, test case ID, test name, error message, and execution details path (`test-runs/{timestamp}/{testCaseId}/exec-1/`).
 
-The configured capability should analyze the failure, apply fix patterns from `./tests/CLAUDE.md`, and rerun. In BYOT mode (no `reporters/bugzy-reporter.ts`), run parse script to update manifest after each rerun:
+The configured capability should analyze the failure, apply fix patterns from `./tests/CLAUDE.md`, and rerun. In BYOT mode (no `reporters/test-reporter.ts`), run parse script to update manifest after each rerun:
 `npx tsx reporters/parse-results.ts --input <output> --timestamp <current> --test-id <testCaseId>`
 
 Retry up to 3 times (exec-1, exec-2, exec-3). If still failing after 3 attempts, reclassify as potential product bug.
@@ -397,7 +397,7 @@ Run this step only when the source control provider/capability is configured. Ot
 
 Use the configured source-control provider to post results on the PR and update the check run.
 
-**Check Run**: Create on CHANGE_CONTEXT.commitSha — name "Bugzy QA / Preview Tests", conclusion `success` or `failure`, summary "X/Y tests passed in Zs".
+**Check Run**: Create on CHANGE_CONTEXT.commitSha — name "QA / Preview Tests", conclusion `success` or `failure`, summary "X/Y tests passed in Zs".
 
 **PR Comment**: Post with status (passed/issues/critical), preview URL tested, test results (total/passed/failed/fixed/bugs/duration), failed test details with errors and screenshots, new tests created, manual verification checklist, and overall recommendation.
 

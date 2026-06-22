@@ -1,6 +1,6 @@
 /**
  * figma-cli — Read-only CLI for Figma REST API v1
- * Used by Bugzy agents for design research
+ * Used by agents for design research
  * Zero runtime dependencies, JSON-only output
  */
 

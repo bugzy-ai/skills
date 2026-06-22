@@ -1,6 +1,6 @@
 /**
  * azure-devops-cli — CLI tool for interacting with Azure DevOps Work Item Tracking API
- * Used by Bugzy agents for issue tracking via the issue-tracker subagent
+ * Used by agents for issue tracking via the issue-tracker subagent
  */
 
 import { listProjectsCommand } from './commands/list-projects';

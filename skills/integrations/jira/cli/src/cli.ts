@@ -1,6 +1,6 @@
 /**
  * jira-cli — CLI tool for interacting with Jira Cloud REST API v3
- * Used by Bugzy agents for issue tracking and documentation research
+ * Used by agents for issue tracking and documentation research
  */
 
 import { searchIssues, getIssue, createIssue, updateIssue, commentIssue, transitionIssue } from './commands/issue';

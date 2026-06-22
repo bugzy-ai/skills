@@ -5,11 +5,11 @@ description: Manage Zephyr Scale test cases. Use when Zephyr is the configured t
 
 # Zephyr Scale Test Case Management
 
-Use this skill as the provider-specific operating guide for the configured Bugzy capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
+Use this skill as the provider-specific operating guide for the configured capability. Follow the command, authentication, duplicate-detection, and output rules below. If the required CLI or credentials are unavailable, report the blocker without exposing secrets.
 
 ## Bundled CLI
 
-This skill bundles @bugzy-ai/zephyr-cli in `./cli`. Prefer the command examples below when `zephyr-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
+This skill bundles sdlc-zephyr-cli in `./cli`. Prefer the command examples below when `zephyr-cli` is on PATH; otherwise run the bundled entrypoint with `node ./cli/dist/cli.js ...` from this skill directory. Do not print tokens or credentials. If authentication is missing, report the blocker without exposing secrets.
 
 ## Operating instructions
 

@@ -1,12 +1,14 @@
 {
   "name": "@bugzy-ai/skills",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Installable Bugzy QA skills for pi.",
+  "description": "Installable SDLC QA, architecture, and development skills for pi.",
   "type": "module",
   "keywords": [
     "pi-package",
-    "bugzy",
+    "sdlc",
+    "architecture",
+    "development",
     "qa",
     "skills"
   ],
