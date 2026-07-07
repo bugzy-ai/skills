@@ -6,6 +6,7 @@
 import { searchIssues, getIssue, createIssue, updateIssue, commentIssue, transitionIssue } from './commands/issue';
 import { listProjects } from './commands/project';
 import { listFields } from './commands/field';
+import { listVersions, ensureVersion } from './commands/version';
 
 /**
  * Parse CLI arguments into positional args and options
@@ -74,6 +75,8 @@ Resources & Actions:
   issue transition <KEY>      --to "Done"
 
   project list
+  version list    --project KEY
+  version ensure  --project KEY --name "1.2.3" [--description "..."]
   field list
 
 Environment Variables:
@@ -172,6 +175,26 @@ async function main() {
         } else {
           console.error(`Unknown action: project ${action || '(none)'}. Use --help for usage.`);
           process.exit(1);
+        }
+        break;
+
+      case 'version':
+        switch (action) {
+          case 'list':
+            await listVersions({
+              project: getOpt(options, 'project') || '',
+            });
+            break;
+          case 'ensure':
+            await ensureVersion({
+              project: getOpt(options, 'project') || '',
+              name: getOpt(options, 'name'),
+              description: getOpt(options, 'description'),
+            });
+            break;
+          default:
+            console.error(`Unknown action: version ${action || '(none)'}. Use --help for usage.`);
+            process.exit(1);
         }
         break;
 

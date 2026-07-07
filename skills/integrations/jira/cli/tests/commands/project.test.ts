@@ -5,7 +5,7 @@ vi.mock('../../src/jira-client', () => ({
 }));
 
 import { request } from '../../src/jira-client';
-import { listProjects } from '../../src/commands/project';
+import { getProject, listProjects } from '../../src/commands/project';
 
 const mockedRequest = vi.mocked(request);
 
@@ -32,5 +32,15 @@ describe('project commands', () => {
     expect(consoleSpy).toHaveBeenCalledWith(
       JSON.stringify([{ key: 'PROJ', name: 'Project' }])
     );
+  });
+
+  it('gets a project by key', async () => {
+    mockedRequest.mockResolvedValue({ id: '10000', key: 'PROJ', name: 'Project' });
+
+    await expect(getProject('PROJ')).resolves.toEqual({
+      id: '10000', key: 'PROJ', name: 'Project',
+    });
+
+    expect(mockedRequest).toHaveBeenCalledWith('GET', '/project/PROJ');
   });
 });

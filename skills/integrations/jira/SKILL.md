@@ -25,3 +25,14 @@ This skill bundles sdlc-jira-cli in `./cli`. Prefer the command examples below w
 2. Load the relevant reference file and follow its workflow-specific instructions.
 3. Prefer read-only discovery until the user asks for a write or the workflow explicitly requires one.
 4. Include durable identifiers, mappings, and conventions in the final output when they affect future work.
+
+## Project versions for release-aware test runs
+
+Release-aware Zephyr workflows use Jira Project Versions as the release source of truth. Use Jira credentials only through `jira-cli`, then pass the returned `version.id` to Zephyr as `jiraProjectVersionId`.
+
+```bash
+jira-cli version list --project PROJ
+jira-cli version ensure --project PROJ --name "1.2.3"
+```
+
+`version ensure` reuses an exact-name unreleased, unarchived match before creating a new unreleased, unarchived Jira Project Version. If the only exact-name matches are released or archived, stop and resolve the Jira version state before continuing. Do not copy Jira credentials into Zephyr commands or Zephyr configuration.

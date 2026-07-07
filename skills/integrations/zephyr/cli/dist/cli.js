@@ -269,6 +269,164 @@ async function createFolder(args) {
   process.stdout.write(JSON.stringify(result, null, 2));
 }
 
+// src/commands/ensure-plan.ts
+function planName(args) {
+  if (args.name) return args.name;
+  if (args.release) return `${args.release} Release Test Plan`;
+  throw new Error("--name or --release is required");
+}
+function parseNumericId(flag, value) {
+  const id = Number(value);
+  if (!Number.isInteger(id) || id <= 0) throw new Error(`${flag} must be a positive numeric ID`);
+  return id;
+}
+async function listAllPlans(project) {
+  const plans = [];
+  let startAt = 0;
+  const maxResults = 100;
+  while (true) {
+    const result = await request(
+      "GET",
+      "/testplans",
+      void 0,
+      { projectKey: project, maxResults, startAt }
+    );
+    plans.push(...result.values);
+    if (result.isLast || result.values.length === 0) break;
+    startAt += maxResults;
+  }
+  return plans;
+}
+async function ensurePlan(args) {
+  if (!args.project) throw new Error("--project is required");
+  const name = planName(args);
+  const folderId = args.folder ? parseNumericId("--folder", args.folder) : void 0;
+  const existing = (await listAllPlans(args.project)).find((plan2) => plan2.name === name);
+  if (existing) {
+    process.stdout.write(JSON.stringify({ created: false, plan: existing }, null, 2));
+    return;
+  }
+  const body = {
+    projectKey: args.project,
+    name
+  };
+  if (args.release) body.labels = [`release:${args.release}`];
+  if (folderId) body.folderId = folderId;
+  if (args.status) body.statusName = args.status;
+  const plan = await request("POST", "/testplans", body);
+  process.stdout.write(JSON.stringify({ created: true, plan }, null, 2));
+}
+
+// src/commands/ensure-cycle.ts
+function parseNumericId2(flag, value) {
+  const id = Number(value);
+  if (!Number.isInteger(id) || id <= 0) throw new Error(`${flag} must be a positive numeric ID`);
+  return id;
+}
+async function listAllCycles(project, jiraProjectVersionId) {
+  const cycles = [];
+  let startAt = 0;
+  const maxResults = 100;
+  while (true) {
+    const result = await request(
+      "GET",
+      "/testcycles",
+      void 0,
+      { projectKey: project, jiraProjectVersionId, maxResults, startAt }
+    );
+    cycles.push(...result.values);
+    if (result.isLast || result.values.length === 0) break;
+    startAt += maxResults;
+  }
+  return cycles;
+}
+async function ensureCycle(args) {
+  if (!args.project) throw new Error("--project is required");
+  if (!args.name) throw new Error("--name is required");
+  if (!args.jiraProjectVersionId) throw new Error("--jira-project-version-id is required");
+  if (!args.plannedStartDate) throw new Error("--planned-start-date is required");
+  if (!args.plannedEndDate) throw new Error("--planned-end-date is required");
+  const jiraProjectVersionId = parseNumericId2("--jira-project-version-id", args.jiraProjectVersionId);
+  const existing = (await listAllCycles(args.project, jiraProjectVersionId)).find(
+    (cycle2) => cycle2.name === args.name
+  );
+  if (existing) {
+    process.stdout.write(JSON.stringify({ created: false, cycle: existing }, null, 2));
+    return;
+  }
+  const body = {
+    projectKey: args.project,
+    name: args.name,
+    jiraProjectVersionId,
+    plannedStartDate: args.plannedStartDate,
+    plannedEndDate: args.plannedEndDate
+  };
+  if (args.description) body.description = args.description;
+  if (args.folder) body.folderId = parseNumericId2("--folder", args.folder);
+  if (args.status) body.statusName = args.status;
+  const cycle = await request("POST", "/testcycles", body);
+  process.stdout.write(JSON.stringify({ created: true, cycle }, null, 2));
+}
+
+// src/commands/link-plan-cycle.ts
+function isLinked(plan, cycle) {
+  return Boolean(plan.links?.testCycles?.some((link) => link.testCycleId === cycle.id || link.target?.endsWith(`/testcycles/${cycle.id}`) || link.target?.endsWith(`/testcycles/${cycle.key}`)));
+}
+async function linkPlanCycle(args) {
+  if (!args.plan) throw new Error("--plan is required");
+  if (!args.cycle) throw new Error("--cycle is required");
+  const [plan, cycle] = await Promise.all([
+    request("GET", `/testplans/${encodeURIComponent(args.plan)}`),
+    request("GET", `/testcycles/${encodeURIComponent(args.cycle)}`)
+  ]);
+  if (isLinked(plan, cycle)) {
+    process.stdout.write(JSON.stringify({ created: false, link: { testPlan: args.plan, testCycle: args.cycle } }, null, 2));
+    return;
+  }
+  const link = await request(
+    "POST",
+    `/testplans/${encodeURIComponent(args.plan)}/links/testcycles`,
+    { testCycleIdOrKey: args.cycle }
+  );
+  process.stdout.write(JSON.stringify({ created: true, link }, null, 2));
+}
+
+// src/commands/record-execution.ts
+function executionComment(args) {
+  const metadata = `Platform release: ${args.release}
+Platform revision: ${args.revision}`;
+  return args.comment ? `${metadata}
+
+${args.comment}` : metadata;
+}
+function parseExecutionTime(value) {
+  const executionTime = Number(value);
+  if (!Number.isInteger(executionTime) || executionTime < 0) {
+    throw new Error("--execution-time must be a non-negative integer");
+  }
+  return executionTime;
+}
+async function recordExecution(args) {
+  if (!args.project) throw new Error("--project is required");
+  if (!args.testCase) throw new Error("--test-case is required");
+  if (!args.testCycle) throw new Error("--test-cycle is required");
+  if (!args.status) throw new Error("--status is required");
+  if (!args.release) throw new Error("--release is required");
+  if (!args.revision) throw new Error("--revision is required");
+  const body = {
+    projectKey: args.project,
+    testCaseKey: args.testCase,
+    testCycleKey: args.testCycle,
+    statusName: args.status,
+    comment: executionComment(args)
+  };
+  if (args.environment) body.environmentName = args.environment;
+  if (args.actualEndDate) body.actualEndDate = args.actualEndDate;
+  if (args.executionTime) body.executionTime = parseExecutionTime(args.executionTime);
+  const result = await request("POST", "/testexecutions", body);
+  process.stdout.write(JSON.stringify(Object.keys(result).length ? result : { recorded: true }, null, 2));
+}
+
 // src/cli.ts
 function parseArgs(args) {
   const positional = [];
@@ -304,6 +462,10 @@ Commands:
   list-cases     List test cases in a project
   list-folders   List test case folders in a project
   create-folder  Create a folder
+  ensure-plan    Create or reuse a release test plan
+  ensure-cycle   Create or reuse a release-linked test cycle
+  link-plan-cycle Link a test cycle to a test plan
+  record-execution Record a test execution with release metadata
 
 Options:
   --version      Show version
@@ -349,6 +511,39 @@ create-folder:
   --project <key>       Project key (required)
   --name <string>       Folder name (required)
   --type <type>         TEST_CASE | TEST_CYCLE | TEST_PLAN (required)
+
+ensure-plan:
+  --project <key>       Project key (required)
+  --release <string>    Platform release number; default name is "<release> Release Test Plan"
+  --name <string>       Explicit test plan name
+  --folder <id>         Folder ID
+  --status <string>     Status name
+
+ensure-cycle:
+  --project <key>       Project key (required)
+  --name <string>       Test cycle name (required)
+  --jira-project-version-id <id> Jira Project Version ID from jira-cli (required)
+  --planned-start-date <date> Planned start date (required)
+  --planned-end-date <date> Planned end date (required)
+  --description <string> Test cycle description
+  --folder <id>         Folder ID
+  --status <string>     Status name
+
+link-plan-cycle:
+  --plan <key|id>       Test plan key or ID (required)
+  --cycle <key|id>      Test cycle key or ID (required)
+
+record-execution:
+  --project <key>       Project key (required)
+  --test-case <key>     Test case key (required)
+  --test-cycle <key>    Test cycle key (required)
+  --status <string>     Execution status name (required)
+  --release <string>    Platform release number (required)
+  --revision <string>   Platform revision (required)
+  --environment <name>  Environment name
+  --actual-end-date <date> Actual end date
+  --execution-time <ms> Execution time in milliseconds
+  --comment <string>    Additional execution comment
 
 Environment:
   ZEPHYR_API_TOKEN      Zephyr Scale API token (required)
@@ -396,6 +591,18 @@ async function main() {
       break;
     case "create-folder":
       await createFolder(cmdArgs);
+      break;
+    case "ensure-plan":
+      await ensurePlan(cmdArgs);
+      break;
+    case "ensure-cycle":
+      await ensureCycle(cmdArgs);
+      break;
+    case "link-plan-cycle":
+      await linkPlanCycle(cmdArgs);
+      break;
+    case "record-execution":
+      await recordExecution(cmdArgs);
       break;
     default:
       console.error(`Unknown command: ${command}`);

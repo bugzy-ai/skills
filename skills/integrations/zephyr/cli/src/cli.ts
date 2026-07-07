@@ -10,6 +10,10 @@ import { updateCase } from './commands/update-case';
 import { listCases } from './commands/list-cases';
 import { listFolders } from './commands/list-folders';
 import { createFolder } from './commands/create-folder';
+import { ensurePlan } from './commands/ensure-plan';
+import { ensureCycle } from './commands/ensure-cycle';
+import { linkPlanCycle } from './commands/link-plan-cycle';
+import { recordExecution } from './commands/record-execution';
 
 /**
  * Parse CLI arguments into positional args and options
@@ -51,6 +55,10 @@ Commands:
   list-cases     List test cases in a project
   list-folders   List test case folders in a project
   create-folder  Create a folder
+  ensure-plan    Create or reuse a release test plan
+  ensure-cycle   Create or reuse a release-linked test cycle
+  link-plan-cycle Link a test cycle to a test plan
+  record-execution Record a test execution with release metadata
 
 Options:
   --version      Show version
@@ -96,6 +104,39 @@ create-folder:
   --project <key>       Project key (required)
   --name <string>       Folder name (required)
   --type <type>         TEST_CASE | TEST_CYCLE | TEST_PLAN (required)
+
+ensure-plan:
+  --project <key>       Project key (required)
+  --release <string>    Platform release number; default name is "<release> Release Test Plan"
+  --name <string>       Explicit test plan name
+  --folder <id>         Folder ID
+  --status <string>     Status name
+
+ensure-cycle:
+  --project <key>       Project key (required)
+  --name <string>       Test cycle name (required)
+  --jira-project-version-id <id> Jira Project Version ID from jira-cli (required)
+  --planned-start-date <date> Planned start date (required)
+  --planned-end-date <date> Planned end date (required)
+  --description <string> Test cycle description
+  --folder <id>         Folder ID
+  --status <string>     Status name
+
+link-plan-cycle:
+  --plan <key|id>       Test plan key or ID (required)
+  --cycle <key|id>      Test cycle key or ID (required)
+
+record-execution:
+  --project <key>       Project key (required)
+  --test-case <key>     Test case key (required)
+  --test-cycle <key>    Test cycle key (required)
+  --status <string>     Execution status name (required)
+  --release <string>    Platform release number (required)
+  --revision <string>   Platform revision (required)
+  --environment <name>  Environment name
+  --actual-end-date <date> Actual end date
+  --execution-time <ms> Execution time in milliseconds
+  --comment <string>    Additional execution comment
 
 Environment:
   ZEPHYR_API_TOKEN      Zephyr Scale API token (required)
@@ -153,6 +194,18 @@ async function main(): Promise<void> {
       break;
     case 'create-folder':
       await createFolder(cmdArgs);
+      break;
+    case 'ensure-plan':
+      await ensurePlan(cmdArgs);
+      break;
+    case 'ensure-cycle':
+      await ensureCycle(cmdArgs);
+      break;
+    case 'link-plan-cycle':
+      await linkPlanCycle(cmdArgs);
+      break;
+    case 'record-execution':
+      await recordExecution(cmdArgs);
       break;
     default:
       console.error(`Unknown command: ${command}`);

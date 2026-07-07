@@ -44,6 +44,43 @@ export interface ZephyrFolder {
   parentId?: number | null;
 }
 
+export interface ZephyrTestPlan {
+  id: number;
+  key: string;
+  name: string;
+  project: ZephyrRef & { key?: string };
+  status?: ZephyrRef | null;
+  objective?: string | null;
+  folder?: ZephyrRef | null;
+  labels?: string[];
+  links?: {
+    testCycles?: Array<{
+      id: number;
+      testCycleId?: number;
+      target?: string;
+    }>;
+  };
+}
+
+export interface ZephyrTestCycle {
+  id: number;
+  key: string;
+  name: string;
+  project: ZephyrRef & { key?: string };
+  status?: ZephyrRef | null;
+  jiraProjectVersion?: ZephyrRef | null;
+  description?: string | null;
+  plannedStartDate?: string | null;
+  plannedEndDate?: string | null;
+  folder?: ZephyrRef | null;
+}
+
+export interface ZephyrCreatedResource {
+  id: number;
+  key?: string;
+  self?: string;
+}
+
 export interface ZephyrListResponse<T> {
   values: T[];
   total: number;

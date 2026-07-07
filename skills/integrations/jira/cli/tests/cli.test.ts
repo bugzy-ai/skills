@@ -18,6 +18,11 @@ vi.mock('../src/commands/field', () => ({
   listFields: vi.fn(),
 }));
 
+vi.mock('../src/commands/version', () => ({
+  listVersions: vi.fn(),
+  ensureVersion: vi.fn(),
+}));
+
 import {
   searchIssues,
   getIssue,
@@ -28,6 +33,7 @@ import {
 } from '../src/commands/issue';
 import { listProjects } from '../src/commands/project';
 import { listFields } from '../src/commands/field';
+import { listVersions, ensureVersion } from '../src/commands/version';
 
 const mockedSearchIssues = vi.mocked(searchIssues);
 const mockedGetIssue = vi.mocked(getIssue);
@@ -37,6 +43,8 @@ const mockedCommentIssue = vi.mocked(commentIssue);
 const mockedTransitionIssue = vi.mocked(transitionIssue);
 const mockedListProjects = vi.mocked(listProjects);
 const mockedListFields = vi.mocked(listFields);
+const mockedListVersions = vi.mocked(listVersions);
+const mockedEnsureVersion = vi.mocked(ensureVersion);
 
 async function runCli(args: string[]) {
   const originalArgv = process.argv;
@@ -60,6 +68,11 @@ async function runCli(args: string[]) {
 
   vi.doMock('../src/commands/field', () => ({
     listFields: mockedListFields,
+  }));
+
+  vi.doMock('../src/commands/version', () => ({
+    listVersions: mockedListVersions,
+    ensureVersion: mockedEnsureVersion,
   }));
 
   try {
@@ -128,6 +141,12 @@ describe('CLI', () => {
 
     it('exits 1 for unknown field action', async () => {
       await runCli(['field', 'unknown']);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Unknown action'));
+      expect(exitSpy).toHaveBeenCalledWith(1);
+    });
+
+    it('exits 1 for unknown version action', async () => {
+      await runCli(['version', 'unknown']);
       expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Unknown action'));
       expect(exitSpy).toHaveBeenCalledWith(1);
     });
@@ -222,6 +241,24 @@ describe('CLI', () => {
       mockedListFields.mockResolvedValue();
       await runCli(['field', 'list']);
       expect(mockedListFields).toHaveBeenCalled();
+    });
+  });
+
+  describe('version commands', () => {
+    it('dispatches version list', async () => {
+      mockedListVersions.mockResolvedValue();
+      await runCli(['version', 'list', '--project', 'PROJ']);
+      expect(mockedListVersions).toHaveBeenCalledWith({ project: 'PROJ' });
+    });
+
+    it('dispatches version ensure', async () => {
+      mockedEnsureVersion.mockResolvedValue();
+      await runCli(['version', 'ensure', '--project', 'PROJ', '--name', '1.0.0', '--description', 'Release']);
+      expect(mockedEnsureVersion).toHaveBeenCalledWith({
+        project: 'PROJ',
+        name: '1.0.0',
+        description: 'Release',
+      });
     });
   });
 

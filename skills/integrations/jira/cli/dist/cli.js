@@ -237,11 +237,53 @@ async function listProjects() {
   const result = await request("GET", "/project/search");
   console.log(JSON.stringify(result.values));
 }
+async function getProject(projectIdOrKey) {
+  if (!projectIdOrKey) throw new Error("--project is required");
+  return request("GET", `/project/${encodeURIComponent(projectIdOrKey)}`);
+}
 
 // src/commands/field.ts
 async function listFields() {
   const result = await request("GET", "/field");
   console.log(JSON.stringify(result));
+}
+
+// src/commands/version.ts
+async function listVersions(args) {
+  if (!args.project) throw new Error("--project is required");
+  const versions = await request(
+    "GET",
+    `/project/${encodeURIComponent(args.project)}/versions`
+  );
+  process.stdout.write(JSON.stringify(versions, null, 2));
+}
+async function ensureVersion(args) {
+  if (!args.project) throw new Error("--project is required");
+  if (!args.name) throw new Error("--name is required");
+  const versions = await request(
+    "GET",
+    `/project/${encodeURIComponent(args.project)}/versions`
+  );
+  const matchingVersions = versions.filter((version2) => version2.name === args.name);
+  const existing = matchingVersions.find((version2) => !version2.archived && !version2.released);
+  if (existing) {
+    process.stdout.write(JSON.stringify({ created: false, version: existing }, null, 2));
+    return;
+  }
+  if (matchingVersions.length > 0) {
+    throw new Error(
+      `Jira version "${args.name}" exists but is archived or released. Choose an unreleased, unarchived version or update the existing version before retrying.`
+    );
+  }
+  const project = await getProject(args.project);
+  const version = await request("POST", "/version", {
+    name: args.name,
+    projectId: Number(project.id),
+    released: false,
+    archived: false,
+    ...args.description ? { description: args.description } : {}
+  });
+  process.stdout.write(JSON.stringify({ created: true, version }, null, 2));
 }
 
 // src/cli.ts
@@ -296,6 +338,8 @@ Resources & Actions:
   issue transition <KEY>      --to "Done"
 
   project list
+  version list    --project KEY
+  version ensure  --project KEY --name "1.2.3" [--description "..."]
   field list
 
 Environment Variables:
@@ -384,6 +428,25 @@ async function main() {
         } else {
           console.error(`Unknown action: project ${action || "(none)"}. Use --help for usage.`);
           process.exit(1);
+        }
+        break;
+      case "version":
+        switch (action) {
+          case "list":
+            await listVersions({
+              project: getOpt(options, "project") || ""
+            });
+            break;
+          case "ensure":
+            await ensureVersion({
+              project: getOpt(options, "project") || "",
+              name: getOpt(options, "name"),
+              description: getOpt(options, "description")
+            });
+            break;
+          default:
+            console.error(`Unknown action: version ${action || "(none)"}. Use --help for usage.`);
+            process.exit(1);
         }
         break;
       case "field":
