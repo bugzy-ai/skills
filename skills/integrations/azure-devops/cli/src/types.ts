@@ -92,3 +92,38 @@ export interface AzureDevOpsErrorResponse {
   typeKey?: string;
   errorCode?: number;
 }
+
+export interface AzureListResponse<T> {
+  count?: number;
+  value: T[];
+}
+
+export interface AzureResource {
+  id?: number | string;
+  name?: string;
+  url?: string;
+  webAccessUrl?: string;
+  webAccessUri?: string;
+  _links?: Record<string, { href?: string }>;
+  links?: Record<string, { href?: string }>;
+  [key: string]: unknown;
+}
+
+export interface ManualTestStep {
+  action: string;
+  expected: string;
+}
+
+export interface TestResultInput {
+  id?: number;
+  testPointId?: number;
+  testCaseId?: number;
+  testCaseTitle?: string;
+  outcome?: string;
+  state?: string;
+  durationMs?: number;
+  comment?: string;
+  errorMessage?: string;
+  startedDate?: string;
+  completedDate?: string;
+}

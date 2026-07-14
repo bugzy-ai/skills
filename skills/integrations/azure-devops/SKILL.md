@@ -1,6 +1,6 @@
 ---
 name: azure-devops
-description: Work with Azure DevOps for QA work items and documentation research. Use when Azure DevOps work items, wiki pages, queries, requirements, bugs, or QA status updates are needed.
+description: Work with Azure DevOps Boards and Test Plans. Use when Azure work items, requirements, bugs, test plans, suites, Test Cases, test runs, or execution results are needed.
 ---
 
 # Azure DevOps Integration
@@ -18,10 +18,11 @@ This skill bundles sdlc-azure-devops-cli in `./cli`. Prefer the command examples
 
 - Read `references/issues.md` for issue tracking tasks.
 - Read `references/documentation.md` for documentation research tasks.
+- Read `references/test-management.md` for Azure Test Plans artifact and execution workflows.
 
 ## Workflow
 
-1. Determine whether the task is about issues, documentation, or source control.
+1. Determine whether the task is about issues, documentation, or test management.
 2. Load the relevant reference file and follow its workflow-specific instructions.
 3. Prefer read-only discovery until the user asks for a write or the workflow explicitly requires one.
 4. Include durable identifiers, mappings, and conventions in the final output when they affect future work.

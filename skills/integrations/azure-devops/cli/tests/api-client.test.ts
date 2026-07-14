@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   getConfig,
   request,
+  requestWithMeta,
   listProjects,
   searchWorkItems,
   getWorkItem,
@@ -38,6 +39,21 @@ describe('getConfig', () => {
     process.env.AZURE_DEVOPS_PAT = 'my-pat';
     const config = getConfig();
     expect(config.orgUrl).toBe('https://dev.azure.com/my-org');
+  });
+
+  it('adds https to an organization URL without a scheme', () => {
+    process.env.AZURE_DEVOPS_ORG_URL = 'dev.azure.com/my-org';
+    process.env.AZURE_DEVOPS_PAT = 'my-pat';
+    expect(getConfig().orgUrl).toBe('https://dev.azure.com/my-org');
+  });
+
+  it('rejects non-Azure and non-HTTPS organization URLs', () => {
+    process.env.AZURE_DEVOPS_PAT = 'my-pat';
+    process.env.AZURE_DEVOPS_ORG_URL = 'http://dev.azure.com/my-org';
+    expect(() => getConfig()).toThrow('must use HTTPS');
+
+    process.env.AZURE_DEVOPS_ORG_URL = 'https://example.com/my-org';
+    expect(() => getConfig()).toThrow('must use HTTPS');
   });
 
   it('throws when AZURE_DEVOPS_ORG_URL is missing', () => {
@@ -237,6 +253,43 @@ describe('request', () => {
     await expect(request('GET', 'projects', { config })).rejects.toThrow(
       'Authentication failed (401)'
     );
+  });
+
+  it('returns continuation metadata from Azure list responses', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: { get: (key: string) => key === 'x-ms-continuationtoken' ? 'next-page' : null },
+      json: () => Promise.resolve({ count: 1, value: [{ id: 1 }] }),
+    }));
+
+    const response = await requestWithMeta<{ count: number }>('GET', 'testplan/plans', { project: 'Demo', config });
+
+    expect(response.continuationToken).toBe('next-page');
+  });
+
+  it('explains missing Test Management permission on TCMS 403 responses', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: false,
+      status: 403,
+      headers: { get: () => null },
+      json: () => Promise.resolve({ message: 'Forbidden' }),
+    }));
+
+    await expect(request('GET', 'testplan/plans', { project: 'Demo', config })).rejects.toThrow(
+      'Test Management read/write permissions',
+    );
+  });
+
+  it('redacts the PAT from Azure error messages', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: false,
+      status: 400,
+      headers: { get: () => null },
+      json: () => Promise.resolve({ message: 'Request included test-pat' }),
+    }));
+
+    await expect(request('GET', 'projects', { config })).rejects.toThrow('Request included [redacted]');
   });
 
   it('throws on 400 without retry', async () => {

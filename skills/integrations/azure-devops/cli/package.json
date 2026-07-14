@@ -1,7 +1,7 @@
 {
   "name": "sdlc-azure-devops-cli",
-  "version": "0.1.0",
-  "description": "CLI tool for the agent to interact with Azure DevOps Work Item Tracking API",
+  "version": "0.2.0",
+  "description": "CLI tool for the agent to interact with Azure DevOps Boards and Test Plans",
   "bin": {
     "azure-devops-cli": "./dist/cli.js"
   },
@@ -12,7 +12,7 @@
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },
-  "keywords": ["sdlc", "azure-devops", "issue-tracker", "agent"],
+  "keywords": ["sdlc", "azure-devops", "issue-tracker", "test-management", "agent"],
   "author": "Skill Package Maintainers",
   "license": "MIT",
   "devDependencies": {

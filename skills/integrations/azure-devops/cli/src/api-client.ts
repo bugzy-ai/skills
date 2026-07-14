@@ -48,7 +48,22 @@ export function getConfig(): AzureDevOpsConfig {
         'Set it to your Azure DevOps Personal Access Token.'
     );
   }
-  return { orgUrl: orgUrl.replace(/\/$/, ''), pat };
+  const trimmedOrgUrl = orgUrl.trim();
+  const normalizedOrgUrl = /^https?:\/\//i.test(trimmedOrgUrl)
+    ? trimmedOrgUrl
+    : `https://${trimmedOrgUrl}`;
+  let parsedOrgUrl: URL;
+  try {
+    parsedOrgUrl = new URL(normalizedOrgUrl);
+  } catch {
+    throw new Error('AZURE_DEVOPS_ORG_URL must be a valid Azure DevOps organization URL.');
+  }
+  const isAzureHost = parsedOrgUrl.hostname === 'dev.azure.com'
+    || parsedOrgUrl.hostname.endsWith('.visualstudio.com');
+  if (parsedOrgUrl.protocol !== 'https:' || !isAzureHost) {
+    throw new Error('AZURE_DEVOPS_ORG_URL must use HTTPS on dev.azure.com or an organization.visualstudio.com host.');
+  }
+  return { orgUrl: normalizedOrgUrl.replace(/\/+$/, ''), pat };
 }
 
 /**
@@ -74,8 +89,25 @@ export async function request<T>(
     project?: string;
     apiVersion?: string;
     config?: AzureDevOpsConfig;
+    permissionHint?: string;
   }
 ): Promise<T> {
+  const result = await requestWithMeta<T>(method, endpoint, options);
+  return result.body;
+}
+
+export async function requestWithMeta<T>(
+  method: string,
+  endpoint: string,
+  options?: {
+    body?: unknown;
+    contentType?: string;
+    project?: string;
+    apiVersion?: string;
+    config?: AzureDevOpsConfig;
+    permissionHint?: string;
+  }
+): Promise<{ body: T; continuationToken?: string }> {
   const config = options?.config ?? getConfig();
   const apiVersion = options?.apiVersion ?? DEFAULT_API_VERSION;
   const authHeader = `Basic ${Buffer.from(`:${config.pat}`).toString('base64')}`;
@@ -102,29 +134,26 @@ export async function request<T>(
       const response = await fetch(url, {
         method,
         headers,
-        body: options?.body ? JSON.stringify(options.body) : undefined,
+        body: options?.body === undefined ? undefined : JSON.stringify(options.body),
         signal: controller.signal,
       });
 
       clearTimeout(timeoutId);
 
       if (response.ok) {
-        // Handle 204 No Content
-        if (response.status === 204) return {} as T;
-        return (await response.json()) as T;
+        const continuationToken = response.headers?.get?.('x-ms-continuationtoken') ?? undefined;
+        if (response.status === 204) return { body: {} as T, continuationToken };
+        return { body: (await response.json()) as T, continuationToken };
       }
 
-      const isRetryable =
-        response.status === 429 ||
-        response.status >= 500;
+      const isRetryable = response.status === 429 || response.status >= 500;
 
       if (isRetryable && attempt < MAX_RETRIES) {
-        const delay = getBackoffDelay(attempt, response.headers.get('Retry-After'));
+        const delay = getBackoffDelay(attempt, response.headers?.get?.('Retry-After'));
         await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
 
-      // Parse error body
       let errorMessage = `Azure DevOps API error ${response.status}`;
       try {
         const errorBody = (await response.json()) as AzureDevOpsErrorResponse;
@@ -132,15 +161,17 @@ export async function request<T>(
           errorMessage = errorBody.message;
         }
       } catch {
-        // Ignore JSON parse errors on error responses
       }
 
       if (response.status === 401) {
-        errorMessage =
-          'Authentication failed (401). Your Personal Access Token may be expired or have insufficient permissions.';
+        errorMessage = 'Authentication failed (401). Your Azure DevOps PAT is invalid or expired.';
+      } else if (response.status === 403 && (options?.permissionHint || isTestManagementEndpoint(endpoint))) {
+        errorMessage = options?.permissionHint
+          ? `Permission denied (403). ${options.permissionHint}`
+          : 'Permission denied (403) for Azure DevOps Test Management endpoint. Verify the PAT has Test Management read/write permissions and project access.';
       }
 
-      throw new AzureDevOpsError(errorMessage, response.status, isRetryable);
+      throw new AzureDevOpsError(sanitizeMessage(errorMessage, config.pat), response.status, isRetryable);
     } catch (error) {
       clearTimeout(timeoutId);
 
@@ -154,7 +185,6 @@ export async function request<T>(
         );
       }
 
-      // Network errors are retryable
       if (attempt < MAX_RETRIES) {
         const delay = getBackoffDelay(attempt);
         await new Promise((resolve) => setTimeout(resolve, delay));
@@ -162,15 +192,23 @@ export async function request<T>(
       }
 
       throw new AzureDevOpsError(
-        `Network error: ${error instanceof Error ? error.message : String(error)}`,
+        sanitizeMessage(`Network error: ${error instanceof Error ? error.message : String(error)}`, config.pat),
         0,
         true
       );
     }
   }
 
-  // Should not reach here, but TypeScript needs it
   throw new AzureDevOpsError('Max retries exceeded', 0, true);
+}
+
+function sanitizeMessage(message: string, pat: string): string {
+  return pat ? message.split(pat).join('[redacted]') : message;
+}
+
+function isTestManagementEndpoint(endpoint: string): boolean {
+  const lower = endpoint.toLowerCase();
+  return lower.startsWith('testplan/') || lower.startsWith('test/runs') || lower.includes('/results');
 }
 
 /**
@@ -267,7 +305,7 @@ export async function searchWorkItems(
 export async function getWorkItem(
   id: number,
   project: string,
-  options?: { fields?: string; expand?: string; config?: AzureDevOpsConfig }
+  options?: { fields?: string; expand?: string; config?: AzureDevOpsConfig; permissionHint?: string }
 ): Promise<WorkItem> {
   const params: string[] = [];
   if (options?.fields) params.push(`fields=${options.fields}`);
@@ -276,6 +314,7 @@ export async function getWorkItem(
   return request<WorkItem>('GET', endpoint, {
     project,
     config: options?.config,
+    permissionHint: options?.permissionHint,
   });
 }
 
@@ -286,13 +325,14 @@ export async function createWorkItem(
   type: string,
   operations: JsonPatchOperation[],
   project: string,
-  options?: { config?: AzureDevOpsConfig }
+  options?: { config?: AzureDevOpsConfig; permissionHint?: string }
 ): Promise<WorkItem> {
   return request<WorkItem>('POST', `wit/workitems/$${encodeURIComponent(type)}`, {
     body: operations,
     contentType: 'application/json-patch+json',
     project,
     config: options?.config,
+    permissionHint: options?.permissionHint,
   });
 }
 
@@ -303,13 +343,14 @@ export async function updateWorkItem(
   id: number,
   operations: JsonPatchOperation[],
   project: string,
-  options?: { config?: AzureDevOpsConfig }
+  options?: { config?: AzureDevOpsConfig; permissionHint?: string }
 ): Promise<WorkItem> {
   return request<WorkItem>('PATCH', `wit/workitems/${id}`, {
     body: operations,
     contentType: 'application/json-patch+json',
     project,
     config: options?.config,
+    permissionHint: options?.permissionHint,
   });
 }
 

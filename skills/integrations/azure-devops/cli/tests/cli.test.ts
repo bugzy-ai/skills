@@ -19,6 +19,12 @@ vi.mock('../src/commands/update', () => ({
 vi.mock('../src/commands/comment', () => ({
   commentCommand: vi.fn().mockResolvedValue(undefined),
 }));
+vi.mock('../src/commands/test-plans', () => ({ testPlanCommand: vi.fn().mockResolvedValue(undefined) }));
+vi.mock('../src/commands/test-suites', () => ({ testSuiteCommand: vi.fn().mockResolvedValue(undefined) }));
+vi.mock('../src/commands/test-cases', () => ({ testCaseCommand: vi.fn().mockResolvedValue(undefined) }));
+vi.mock('../src/commands/test-points', () => ({ testPointCommand: vi.fn().mockResolvedValue(undefined) }));
+vi.mock('../src/commands/test-runs', () => ({ testRunCommand: vi.fn().mockResolvedValue(undefined) }));
+vi.mock('../src/commands/test-results', () => ({ testResultCommand: vi.fn().mockResolvedValue(undefined) }));
 
 describe('CLI', () => {
   let exitSpy: ReturnType<typeof vi.spyOn>;
@@ -26,12 +32,14 @@ describe('CLI', () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    process.exitCode = undefined;
     exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never);
     consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
+    process.exitCode = undefined;
     vi.restoreAllMocks();
   });
 
@@ -58,6 +66,12 @@ describe('CLI', () => {
     vi.doMock('../src/commands/comment', () => ({
       commentCommand: vi.fn().mockResolvedValue(undefined),
     }));
+    vi.doMock('../src/commands/test-plans', () => ({ testPlanCommand: vi.fn().mockResolvedValue(undefined) }));
+    vi.doMock('../src/commands/test-suites', () => ({ testSuiteCommand: vi.fn().mockResolvedValue(undefined) }));
+    vi.doMock('../src/commands/test-cases', () => ({ testCaseCommand: vi.fn().mockResolvedValue(undefined) }));
+    vi.doMock('../src/commands/test-points', () => ({ testPointCommand: vi.fn().mockResolvedValue(undefined) }));
+    vi.doMock('../src/commands/test-runs', () => ({ testRunCommand: vi.fn().mockResolvedValue(undefined) }));
+    vi.doMock('../src/commands/test-results', () => ({ testResultCommand: vi.fn().mockResolvedValue(undefined) }));
 
     await import('../src/cli');
   }
@@ -82,7 +96,7 @@ describe('CLI', () => {
 
   it('shows version with --version', async () => {
     await runCli(['--version']);
-    expect(consoleSpy).toHaveBeenCalledWith('0.1.0');
+    expect(consoleSpy).toHaveBeenCalledWith('0.2.0');
     expect(exitSpy).toHaveBeenCalledWith(0);
   });
 
@@ -141,6 +155,32 @@ describe('CLI', () => {
       '42',
       expect.objectContaining({ project: 'MyProject', body: 'QA verified' })
     );
+  });
+
+  it('dispatches Test Plans resource commands', async () => {
+    await runCli(['test-plan', 'list', '--project', 'Demo']);
+    const { testPlanCommand } = await import('../src/commands/test-plans');
+    expect(testPlanCommand).toHaveBeenCalledWith('list', undefined, expect.objectContaining({ project: 'Demo' }));
+
+    await runCli(['test-suite', 'add-cases', '12', '--project', 'Demo', '--plan-id', '5', '--case-ids', '20,21']);
+    const { testSuiteCommand } = await import('../src/commands/test-suites');
+    expect(testSuiteCommand).toHaveBeenCalledWith('add-cases', '12', expect.objectContaining({ planId: '5', caseIds: '20,21' }));
+
+    await runCli(['test-case', 'create', '--project', 'Demo', '--title', 'Login', '--steps', '[]']);
+    const { testCaseCommand } = await import('../src/commands/test-cases');
+    expect(testCaseCommand).toHaveBeenCalledWith('create', undefined, expect.objectContaining({ title: 'Login', steps: '[]' }));
+
+    await runCli(['test-point', 'list', '--project', 'Demo', '--plan-id', '5', '--suite-id', '12']);
+    const { testPointCommand } = await import('../src/commands/test-points');
+    expect(testPointCommand).toHaveBeenCalledWith('list', expect.objectContaining({ planId: '5', suiteId: '12' }));
+
+    await runCli(['test-run', 'complete', '33', '--project', 'Demo']);
+    const { testRunCommand } = await import('../src/commands/test-runs');
+    expect(testRunCommand).toHaveBeenCalledWith('complete', '33', expect.objectContaining({ project: 'Demo' }));
+
+    await runCli(['test-result', 'update', '100', '--project', 'Demo', '--run-id', '33', '--outcome', 'Passed']);
+    const { testResultCommand } = await import('../src/commands/test-results');
+    expect(testResultCommand).toHaveBeenCalledWith('update', '100', expect.objectContaining({ runId: '33', outcome: 'Passed' }));
   });
 
   it('shows error for unknown resource', async () => {
